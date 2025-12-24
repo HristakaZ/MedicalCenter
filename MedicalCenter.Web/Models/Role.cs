@@ -7,6 +7,6 @@ namespace MedicalCenter.Web.Models
         [MaxLength(50)]
         public string Description { get; set; }
 
-        public List<User> Users { get; set; }
+        public virtual List<User> Users { get; set; }
     }
 }

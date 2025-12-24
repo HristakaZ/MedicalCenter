@@ -185,7 +185,7 @@ namespace MedicalCenter.Web.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DoctorPatient");
+                name: "DoctorsPatients");
 
             migrationBuilder.DropTable(
                 name: "MedicalExaminations");

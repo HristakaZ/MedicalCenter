@@ -4,10 +4,12 @@
     {
         public int Room { get; set; }
 
-        public Specialty Specialty { get; set; }
+        public virtual Specialty Specialty { get; set; }
 
-        public List<Patient> Patients { get; set; }
+        public int SpecialtyID { get; set; }
 
-        public List<MedicalExamination> MedicalExaminations { get; set; }
+        public virtual List<Patient> Patients { get; set; }
+
+        public virtual List<MedicalExamination> MedicalExaminations { get; set; }
     }
 }

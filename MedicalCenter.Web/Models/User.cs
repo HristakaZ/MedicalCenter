@@ -7,7 +7,6 @@ namespace MedicalCenter.Web.Models
         [MaxLength(100)]
         public string Email { get; set; }
 
-        [MaxLength(100)]
         public string Password { get; set; }
 
         [MaxLength(50)]
@@ -16,6 +15,8 @@ namespace MedicalCenter.Web.Models
         [MaxLength(50)]
         public string Surname { get; set; }
 
-        public Role Role { get; set; }
+        public virtual Role Role { get; set; }
+
+        public int RoleID { get; set; }
     }
 }

@@ -1,4 +1,8 @@
 ﻿@inject IHttpContextAccessor HttpContextAccessor
+@{
+    int? userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserID");
+    string? userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -28,25 +32,34 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        @if (HttpContextAccessor.HttpContext.Session.GetInt32("UserID") == 0)
+                        @if (userId.HasValue && userId.Value != 0)
                         {
-                            <li>
+                            <li class="ms-auto">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="ms-auto">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Login">Login</a>
                             </li>
                             <li>
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Register">Register</a>
                             </li>
                         }
-                        <li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Logout">Logout</a>
-                        </li>
-                        @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator")
+                        @if (userRole == "Administrator")
                         {
                             <li>
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
                             </li>
                             <li>
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="Index">Medical Examinations</a>
+                            </li>
+                        }
+                        @if (userRole == "Administrator" || userRole == "Doctor")
+                        {
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Specialties" asp-action="Index">Medical Examinations</a>
                             </li>
                         }
                         <li>

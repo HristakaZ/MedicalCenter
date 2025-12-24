@@ -11,7 +11,10 @@ namespace MedicalCenter.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<Models.MedicalCenterDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("MedicalCenterDatabaseConnectionString")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("MedicalCenterDatabaseConnectionString"))
+                       .UseLazyLoadingProxies());
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSession();
 
             var app = builder.Build();
 
@@ -24,6 +27,7 @@ namespace MedicalCenter.Web
             }
 
             app.UseHttpsRedirection();
+            app.UseSession();
             app.UseRouting();
 
             app.UseAuthorization();

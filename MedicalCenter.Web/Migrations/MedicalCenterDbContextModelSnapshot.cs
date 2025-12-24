@@ -22,28 +22,57 @@ namespace MedicalCenter.Web.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DoctorPatient", b =>
-                {
-                    b.Property<int>("DoctorsID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PatientsID")
-                        .HasColumnType("int");
-
-                    b.HasKey("DoctorsID", "PatientsID");
-
-                    b.HasIndex("PatientsID");
-
-                    b.ToTable("DoctorPatient");
-                });
-
-            modelBuilder.Entity("MedicalCenter.Web.Models.MedicalExamination", b =>
+            modelBuilder.Entity("MedicalCenter.Web.Dtos.MedicalExamination.EditMedicalExaminationDto", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Diagnosis")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Recommendation")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("EditMedicalExaminationDto");
+                });
+
+            modelBuilder.Entity("MedicalCenter.Web.Models.BaseEntity", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.HasKey("ID");
+
+                    b.ToTable("BaseEntity");
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("MedicalCenter.Web.Models.MedicalExamination", b =>
+                {
+                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
 
                     b.Property<string>("Diagnosis")
                         .HasMaxLength(500)
@@ -65,8 +94,6 @@ namespace MedicalCenter.Web.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ID");
-
                     b.HasIndex("DoctorID");
 
                     b.HasIndex("PatientID");
@@ -76,47 +103,31 @@ namespace MedicalCenter.Web.Migrations
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Role", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("ID");
 
                     b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Specialty", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ID");
-
                     b.ToTable("Specialties");
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.User", b =>
                 {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -130,8 +141,7 @@ namespace MedicalCenter.Web.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RoleID")
                         .HasColumnType("int");
@@ -141,13 +151,9 @@ namespace MedicalCenter.Web.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("ID");
-
                     b.HasIndex("RoleID");
 
                     b.ToTable("Users", (string)null);
-
-                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Doctor", b =>
@@ -169,6 +175,9 @@ namespace MedicalCenter.Web.Migrations
                 {
                     b.HasBaseType("MedicalCenter.Web.Models.User");
 
+                    b.Property<int>("DoctorID")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -177,22 +186,9 @@ namespace MedicalCenter.Web.Migrations
                     b.Property<int>("SSN")
                         .HasColumnType("int");
 
+                    b.HasIndex("DoctorID");
+
                     b.ToTable("Patients", (string)null);
-                });
-
-            modelBuilder.Entity("DoctorPatient", b =>
-                {
-                    b.HasOne("MedicalCenter.Web.Models.Doctor", null)
-                        .WithMany()
-                        .HasForeignKey("DoctorsID")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
-                    b.HasOne("MedicalCenter.Web.Models.Patient", null)
-                        .WithMany()
-                        .HasForeignKey("PatientsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.MedicalExamination", b =>
@@ -200,6 +196,12 @@ namespace MedicalCenter.Web.Migrations
                     b.HasOne("MedicalCenter.Web.Models.Doctor", "Doctor")
                         .WithMany("MedicalExaminations")
                         .HasForeignKey("DoctorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("MedicalCenter.Web.Models.MedicalExamination", "ID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -214,8 +216,32 @@ namespace MedicalCenter.Web.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("MedicalCenter.Web.Models.Role", b =>
+                {
+                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("MedicalCenter.Web.Models.Role", "ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MedicalCenter.Web.Models.Specialty", b =>
+                {
+                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("MedicalCenter.Web.Models.Specialty", "ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MedicalCenter.Web.Models.User", b =>
                 {
+                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
+                        .WithOne()
+                        .HasForeignKey("MedicalCenter.Web.Models.User", "ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MedicalCenter.Web.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleID")
@@ -244,11 +270,19 @@ namespace MedicalCenter.Web.Migrations
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Patient", b =>
                 {
+                    b.HasOne("MedicalCenter.Web.Models.Doctor", "Doctor")
+                        .WithMany("Patients")
+                        .HasForeignKey("DoctorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MedicalCenter.Web.Models.User", null)
                         .WithOne()
                         .HasForeignKey("MedicalCenter.Web.Models.Patient", "ID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Role", b =>
@@ -264,6 +298,8 @@ namespace MedicalCenter.Web.Migrations
             modelBuilder.Entity("MedicalCenter.Web.Models.Doctor", b =>
                 {
                     b.Navigation("MedicalExaminations");
+
+                    b.Navigation("Patients");
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Patient", b =>

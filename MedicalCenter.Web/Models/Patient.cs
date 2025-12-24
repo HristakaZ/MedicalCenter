@@ -9,8 +9,10 @@ namespace MedicalCenter.Web.Models
         [MaxLength(20)]
         public string PhoneNumber { get; set; }
 
-        public List<MedicalExamination> MedicalExaminations { get; set; }
+        public virtual List<MedicalExamination> MedicalExaminations { get; set; }
 
-        public List<Doctor> Doctors { get; set; }
+        public virtual Doctor Doctor { get; set; }
+
+        public int DoctorID { get; set; }
     }
 }

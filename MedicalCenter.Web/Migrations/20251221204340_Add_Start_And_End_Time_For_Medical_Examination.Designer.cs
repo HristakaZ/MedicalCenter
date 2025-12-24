@@ -25,7 +25,7 @@ namespace MedicalCenter.Web.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DoctorPatient", b =>
+            modelBuilder.Entity("DoctorsPatients", b =>
                 {
                     b.Property<int>("DoctorsID")
                         .HasColumnType("int");
@@ -37,7 +37,7 @@ namespace MedicalCenter.Web.Migrations
 
                     b.HasIndex("PatientsID");
 
-                    b.ToTable("DoctorPatient");
+                    b.ToTable("DoctorsPatients");
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.MedicalExamination", b =>
@@ -183,7 +183,7 @@ namespace MedicalCenter.Web.Migrations
                     b.ToTable("Patients", (string)null);
                 });
 
-            modelBuilder.Entity("DoctorPatient", b =>
+            modelBuilder.Entity("DoctorsPatients", b =>
                 {
                     b.HasOne("MedicalCenter.Web.Models.Doctor", null)
                         .WithMany()

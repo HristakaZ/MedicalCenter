@@ -14,8 +14,12 @@ namespace MedicalCenter.Web.Models
 
         public DateTime EndTime { get; set; }
 
-        public Patient Patient { get; set; }
+        public virtual Patient Patient { get; set; }
 
-        public Doctor Doctor { get; set; }
+        public int PatientID { get; set; }
+
+        public virtual Doctor Doctor { get; set; }
+
+        public int DoctorID { get; set; }
     }
 }

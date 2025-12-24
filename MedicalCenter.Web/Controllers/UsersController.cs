@@ -2,6 +2,7 @@
 using MedicalCenter.Web.Dtos.User;
 using MedicalCenter.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,10 +13,10 @@ namespace MedicalCenter.Web.Controllers
     {
         private readonly MedicalCenterDbContext _context;
         private readonly bool isAdministrator;
-        public UsersController(MedicalCenterDbContext context)
+        public UsersController(MedicalCenterDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
-            isAdministrator = HttpContext.Session.GetString("UserRole") == "Administrator";
+            isAdministrator = httpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator";
         }
 
         // GET: Users
@@ -69,7 +70,7 @@ namespace MedicalCenter.Web.Controllers
                 Role = user.Role
             };
 
-            return View(user);
+            return View(userDto);
         }
 
         // GET: Users/Register
@@ -93,8 +94,8 @@ namespace MedicalCenter.Web.Controllers
                     Name = registerUserDto.Name,
                     Surname = registerUserDto.Surname,
                     Password = HashPassword(registerUserDto.Password),
-                    // assigning default role as 'Patient' with ID = 1
-                    Role = await _context.Roles.FirstOrDefaultAsync(role => role.ID == 1)
+                    // assigning default role as 'Administrator' with ID = 3
+                    Role = await _context.Roles.FirstOrDefaultAsync(role => role.ID == 3)
                 };
                 _context.Add(user);
                 await _context.SaveChangesAsync();
@@ -154,15 +155,22 @@ namespace MedicalCenter.Web.Controllers
             // Ensure that users can only view their own details if he is not an administrator
             if ((user.ID != HttpContext.Session.GetInt32("UserID")) && !isAdministrator)
             {
-                return RedirectToAction("Register");
+                return RedirectToAction("Logout");
             }
 
-            GetUserDto userDto = new GetUserDto()
+            List<Role> roles = await _context.Roles.ToListAsync();
+            EditUserDto userDto = new EditUserDto
             {
-                Email = user.Email,
+                ID = user.ID,
                 Name = user.Name,
                 Surname = user.Surname,
-                Role = user.Role
+                SelectedRole = user.Role.ID.ToString(),
+                Roles = roles.Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description,
+                    Selected = r.ID == user.Role.ID
+                }).ToList()
             };
 
             return View(userDto);
@@ -181,23 +189,33 @@ namespace MedicalCenter.Web.Controllers
                 return NotFound();
             }
 
+            if (!int.TryParse(editUserDto.SelectedRole, out int selectedRoleId))
+            {
+                return NotFound();
+            }
+
+            Role selectedRole = await _context.Roles.FirstOrDefaultAsync(x => x.ID == selectedRoleId);
+
+            if (selectedRole == null)
+            {
+                return NotFound();
+            }
+
             User user = await _context.Users.FindAsync(id);
 
             // Ensure that users can only view their own details if he is not an administrator
             if ((user.ID != HttpContext.Session.GetInt32("UserID")) && !isAdministrator)
             {
-                return RedirectToAction("Register");
+                return RedirectToAction("Logout");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    user.Email = editUserDto.Email;
                     user.Name = editUserDto.Name;
                     user.Surname = editUserDto.Surname;
-                    user.Password = HashPassword(editUserDto.Password);
-                    user.Role = editUserDto.Role;
+                    user.Role = selectedRole;
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
@@ -236,7 +254,7 @@ namespace MedicalCenter.Web.Controllers
             // Ensure that users can only view their own details if he is not an administrator
             if ((user.ID != HttpContext.Session.GetInt32("UserID")) && !isAdministrator)
             {
-                return RedirectToAction("Register");
+                return RedirectToAction("Logout");
             }
 
             GetUserDto userDto = new GetUserDto()

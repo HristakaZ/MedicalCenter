@@ -28,7 +28,7 @@ namespace MedicalCenter.Web.Attributes
             {
                 string sessionUserRole = context.HttpContext.Session.GetString("UserRole")!;
                 // Check if the user has the required role
-                if (_roles.Contains(sessionUserRole))
+                if (!_roles.Contains(sessionUserRole))
                 {
                     context.Result = new RedirectToActionResult("Index", "Home", null);
                     return;
