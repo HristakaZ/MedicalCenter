@@ -1,5 +1,6 @@
 ﻿@using MedicalCenter.Web.Dtos.MedicalExamination
 @model AddMedicalExaminationDto
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Create";
@@ -37,7 +38,14 @@
 </div>
 
 <div>
-    <a asp-action="MyExaminations">Back to List</a>
+    @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
+    {
+        <a asp-action="MyExaminations">Back to List</a>
+    }
+    else
+    {
+        <a asp-action="Index">Back to List</a>
+    }
 </div>
 
 @section Scripts {

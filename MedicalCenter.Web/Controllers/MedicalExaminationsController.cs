@@ -45,14 +45,6 @@ namespace MedicalCenter.Web.Controllers
             return View(medicalExaminationDtos);
         }
 
-        [HttpGet]
-        [AuthenticateAuthorize]
-        public async Task<IActionResult> CheckDoctorAvailability(int doctorId, DateTime startTime, DateTime endTime)
-        {
-            bool hasConflict = await IsMedicalExaminationConflictingForDoctorAsync(doctorId, startTime, endTime);
-            return Json(!hasConflict); // true = available, false = conflict
-        }
-
         [AuthenticateAuthorize]
         public IActionResult MyExaminations()
         {
@@ -72,7 +64,22 @@ namespace MedicalCenter.Web.Controllers
                     .ToList();
             }
 
-            return View(medicalExaminations);
+            List<GetMedicalExaminationDto> medicalExaminationDtos = new List<GetMedicalExaminationDto>();
+            foreach (var medicalExamination in medicalExaminations)
+            {
+                medicalExaminationDtos.Add(new GetMedicalExaminationDto()
+                {
+                    ID = medicalExamination.ID,
+                    Diagnosis = medicalExamination.Diagnosis,
+                    Recommendation = medicalExamination.Recommendation,
+                    StartTime = medicalExamination.StartTime,
+                    EndTime = medicalExamination.EndTime,
+                    PatientName = $"{medicalExamination.Patient.Name} {medicalExamination.Patient.Surname}",
+                    DoctorName = $"{medicalExamination.Doctor.Name} {medicalExamination.Doctor.Surname}"
+                });
+            }
+
+            return View(medicalExaminationDtos);
         }
 
         // GET: MedicalExaminations/Details/5
@@ -95,7 +102,18 @@ namespace MedicalCenter.Web.Controllers
                 return NotFound();
             }
 
-            return View(medicalExamination);
+            GetMedicalExaminationDto medicalExaminationDto = new GetMedicalExaminationDto()
+            {
+                ID = medicalExamination.ID,
+                Diagnosis = medicalExamination.Diagnosis,
+                Recommendation = medicalExamination.Recommendation,
+                StartTime = medicalExamination.StartTime,
+                EndTime = medicalExamination.EndTime,
+                PatientName = $"{medicalExamination.Patient.Name} {medicalExamination.Patient.Surname}",
+                DoctorName = $"{medicalExamination.Doctor.Name} {medicalExamination.Doctor.Surname}"
+            };
+
+            return View(medicalExaminationDto);
         }
 
         // GET: MedicalExaminations/Create
@@ -239,15 +257,32 @@ namespace MedicalCenter.Web.Controllers
                 return NotFound();
             }
 
+            if (!int.TryParse(editMedicalExaminationDto.SelectedDoctor, out int doctorId))
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    Patient patient = await _context.Patients.FindAsync(editMedicalExaminationDto.PatientId);
-                    Doctor doctor = await _context.Doctors.FindAsync(editMedicalExaminationDto.DoctorId);
-                    if (patient == null || doctor == null)
+                    Doctor doctor = await _context.Doctors.FindAsync(doctorId);
+                    if (doctor == null)
                     {
                         return NotFound();
+                    }
+
+                    var doctors = await _context.Doctors.ToListAsync();
+                    editMedicalExaminationDto.Doctors = doctors.Select(r => new SelectListItem
+                    {
+                        Value = r.ID.ToString(),
+                        Text = $"{r.Name} {r.Surname}"
+                    }).ToList();
+                    if (editMedicalExaminationDto.StartTime > editMedicalExaminationDto.EndTime)
+                    {
+                        ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "End time must be later than start time.");
+                        ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "End time must be later than start time.");
+                        return View(editMedicalExaminationDto);
                     }
 
                     if (await IsMedicalExaminationConflictingForDoctorAsync(editMedicalExaminationDto.DoctorId, editMedicalExaminationDto.StartTime, editMedicalExaminationDto.EndTime))
@@ -263,7 +298,6 @@ namespace MedicalCenter.Web.Controllers
                         medicalExamination.Diagnosis = editMedicalExaminationDto.Diagnosis;
                         medicalExamination.Recommendation = editMedicalExaminationDto.Recommendation;
                     }
-                    medicalExamination.Patient = patient;
                     medicalExamination.Doctor = doctor;
                     medicalExamination.StartTime = editMedicalExaminationDto.StartTime;
                     medicalExamination.EndTime = editMedicalExaminationDto.EndTime;
@@ -281,28 +315,17 @@ namespace MedicalCenter.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(MyExaminations));
             }
 
-            /*var doctors = await _context.Doctors.ToListAsync();
-
-            EditMedicalExaminationDto editMedicalExaminationDto = new EditMedicalExaminationDto
-            {
-                ID = medicalExamination.ID,
-                PatientId = medicalExamination.PatientID,
-                DoctorId = medicalExamination.DoctorID,
-                StartTime = medicalExamination.StartTime,
-                EndTime = medicalExamination.EndTime,
-                Diagnosis = medicalExamination.Diagnosis,
-                Recommendation = medicalExamination.Recommendation,
-                SelectedDoctor = medicalExamination.DoctorID.ToString(),
-                Doctors = doctors.Select(r => new SelectListItem
-                {
-                    Value = r.ID.ToString(),
-                    Text = $"{r.Name} {r.Surname}",
-                    Selected = r.ID == medicalExamination.DoctorID
-                }).ToList()
-            };*/
+            editMedicalExaminationDto.ID = medicalExamination.ID;
+            editMedicalExaminationDto.PatientId = medicalExamination.PatientID;
+            editMedicalExaminationDto.DoctorId = medicalExamination.DoctorID;
+            editMedicalExaminationDto.StartTime = medicalExamination.StartTime;
+            editMedicalExaminationDto.EndTime = medicalExamination.EndTime;
+            editMedicalExaminationDto.Diagnosis = medicalExamination.Diagnosis;
+            editMedicalExaminationDto.Recommendation = medicalExamination.Recommendation;
+            editMedicalExaminationDto.SelectedDoctor = medicalExamination.DoctorID.ToString();
 
             return View(editMedicalExaminationDto);
         }
@@ -323,13 +346,24 @@ namespace MedicalCenter.Web.Controllers
             }
 
             var loggedInPatient = await _context.Patients.FirstOrDefaultAsync(u => u.ID == HttpContext.Session.GetInt32("UserID"));
-            bool isSameAsLoggedInPatient = loggedInPatient.ID != medicalExamination.Patient.ID;
+            bool isSameAsLoggedInPatient = loggedInPatient.ID == medicalExamination.Patient.ID;
             if (!isSameAsLoggedInPatient)
             {
                 return NotFound();
             }
 
-            return View(medicalExamination);
+            GetMedicalExaminationDto medicalExaminationDto = new GetMedicalExaminationDto()
+            {
+                ID = medicalExamination.ID,
+                Diagnosis = medicalExamination.Diagnosis,
+                Recommendation = medicalExamination.Recommendation,
+                StartTime = medicalExamination.StartTime,
+                EndTime = medicalExamination.EndTime,
+                PatientName = $"{medicalExamination.Patient.Name} {medicalExamination.Patient.Surname}",
+                DoctorName = $"{medicalExamination.Doctor.Name} {medicalExamination.Doctor.Surname}"
+            };
+
+            return View(medicalExaminationDto);
         }
 
         // POST: MedicalExaminations/Delete/5
@@ -340,7 +374,7 @@ namespace MedicalCenter.Web.Controllers
         {
             var loggedInPatient = await _context.Patients.FirstOrDefaultAsync(u => u.ID == HttpContext.Session.GetInt32("UserID"));
             var medicalExamination = await _context.MedicalExaminations.FindAsync(id);
-            bool isSameAsLoggedInPatient = loggedInPatient.ID != medicalExamination.Patient.ID;
+            bool isSameAsLoggedInPatient = loggedInPatient.ID == medicalExamination.Patient.ID;
             if (!isSameAsLoggedInPatient)
             {
                 return NotFound();
@@ -352,7 +386,7 @@ namespace MedicalCenter.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyExaminations));
         }
 
         private bool MedicalExaminationExists(int id)
