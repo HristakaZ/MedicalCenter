@@ -18,61 +18,20 @@ namespace MedicalCenter.Web.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MedicalCenter.Web.Dtos.MedicalExamination.EditMedicalExaminationDto", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("Diagnosis")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Recommendation")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("EditMedicalExaminationDto");
-                });
-
-            modelBuilder.Entity("MedicalCenter.Web.Models.BaseEntity", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.HasKey("ID");
-
-                    b.ToTable("BaseEntity");
-
-                    b.UseTptMappingStrategy();
-                });
-
             modelBuilder.Entity("MedicalCenter.Web.Models.MedicalExamination", b =>
                 {
-                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Diagnosis")
                         .HasMaxLength(500)
@@ -94,6 +53,8 @@ namespace MedicalCenter.Web.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
+                    b.HasKey("ID");
+
                     b.HasIndex("DoctorID");
 
                     b.HasIndex("PatientID");
@@ -103,31 +64,47 @@ namespace MedicalCenter.Web.Migrations
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Role", b =>
                 {
-                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ID");
 
                     b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Specialty", b =>
                 {
-                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.HasKey("ID");
+
                     b.ToTable("Specialties");
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.User", b =>
                 {
-                    b.HasBaseType("MedicalCenter.Web.Models.BaseEntity");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -151,9 +128,13 @@ namespace MedicalCenter.Web.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.HasKey("ID");
+
                     b.HasIndex("RoleID");
 
                     b.ToTable("Users", (string)null);
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("MedicalCenter.Web.Models.Doctor", b =>
@@ -199,12 +180,6 @@ namespace MedicalCenter.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
-                        .WithOne()
-                        .HasForeignKey("MedicalCenter.Web.Models.MedicalExamination", "ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MedicalCenter.Web.Models.Patient", "Patient")
                         .WithMany("MedicalExaminations")
                         .HasForeignKey("PatientID")
@@ -216,32 +191,8 @@ namespace MedicalCenter.Web.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("MedicalCenter.Web.Models.Role", b =>
-                {
-                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
-                        .WithOne()
-                        .HasForeignKey("MedicalCenter.Web.Models.Role", "ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MedicalCenter.Web.Models.Specialty", b =>
-                {
-                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
-                        .WithOne()
-                        .HasForeignKey("MedicalCenter.Web.Models.Specialty", "ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("MedicalCenter.Web.Models.User", b =>
                 {
-                    b.HasOne("MedicalCenter.Web.Models.BaseEntity", null)
-                        .WithOne()
-                        .HasForeignKey("MedicalCenter.Web.Models.User", "ID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MedicalCenter.Web.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleID")

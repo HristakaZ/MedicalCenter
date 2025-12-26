@@ -1,21 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MedicalCenter.Web.Dtos.MedicalExamination
 {
     public class AddMedicalExaminationDto
     {
-        [MaxLength(500)]
-        public string? Diagnosis { get; set; }
-
-        [MaxLength(500)]
-        public string? Recommendation { get; set; }
-
         public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }
 
-        public int PatientId { get; set; }
+        public string SelectedDoctor { get; set; }
 
-        public int DoctorId { get; set; }
+        public List<SelectListItem> Doctors { get; set; } = new List<SelectListItem>();
     }
 }

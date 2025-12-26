@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MedicalCenter.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
     <header>
@@ -32,10 +34,26 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (userRole == "Patient" || userRole == "Doctor")
+                        {
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="MyExaminations">My Medical Examinations</a>
+                            </li>
+                        }
                         @if (userId.HasValue && userId.Value != 0)
                         {
-                            <li class="ms-auto">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Logout">Logout</a>
+                            <li class="nav-item dropdown ms-auto">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @HttpContextAccessor.HttpContext.Session.GetString("UserEmail")
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Logout">Logout</a>
+                                    </li>
+                                </ul>
                             </li>
                         }
                         else
@@ -56,15 +74,6 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="Index">Medical Examinations</a>
                             </li>
                         }
-                        @if (userRole == "Administrator" || userRole == "Doctor")
-                        {
-                            <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Specialties" asp-action="Index">Medical Examinations</a>
-                            </li>
-                        }
-                        <li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">My Profile</a>
-                        </li>
                     </ul>
                 </div>
             </div>

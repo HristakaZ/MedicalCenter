@@ -45,14 +45,14 @@ namespace MedicalCenter.Web.Migrations
             migrationBuilder.InsertData(
                 table: "Doctors",
                 columns: new[] { "ID", "Room", "SpecialtyID" },
-                values: new object[] { 1, 101, 1 }
+                values: new object[] { 2, 101, 1 }
             );
 
             // Seed data for Patients table
             migrationBuilder.InsertData(
                 table: "Patients",
                 columns: new[] { "ID", "SSN", "PhoneNumber", "DoctorID" },
-                values: new object[] { 1, 0725191800, "+359891234567", 1 }
+                values: new object[] { 1, 0725191800, "+359891234567", 2 }
             );
         }
 

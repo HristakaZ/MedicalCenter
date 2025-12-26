@@ -144,6 +144,5 @@ namespace MedicalCenter.Web.Models
         public DbSet<Role> Roles { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<MedicalExamination> MedicalExaminations { get; set; }
-        public DbSet<MedicalCenter.Web.Dtos.MedicalExamination.EditMedicalExaminationDto> EditMedicalExaminationDto { get; set; } = default!;
     }
 }

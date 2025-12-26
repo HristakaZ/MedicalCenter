@@ -1,4 +1,5 @@
 ﻿using MedicalCenter.Web.Attributes;
+using MedicalCenter.Web.Constants;
 using MedicalCenter.Web.Dtos.User;
 using MedicalCenter.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -95,9 +96,9 @@ namespace MedicalCenter.Web.Controllers
                     Surname = registerUserDto.Surname,
                     Password = HashPassword(registerUserDto.Password),
                     // assigning default role as 'Administrator' with ID = 3
-                    Role = await _context.Roles.FirstOrDefaultAsync(role => role.ID == 3)
+                    Role = await _context.Roles.FirstOrDefaultAsync(role => role.ID == RoleConstants.AdminRoleId)
                 };
-                _context.Add(user);
+                _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
@@ -126,7 +127,15 @@ namespace MedicalCenter.Web.Controllers
                 {
                     HttpContext.Session.SetInt32("UserID", user.ID);
                     HttpContext.Session.SetString("UserRole", user.Role.Description);
-                    return RedirectToAction(nameof(Index));
+                    HttpContext.Session.SetString("UserEmail", user.Email);
+                    if (user.RoleID == RoleConstants.AdminRoleId)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        return RedirectToAction("MyExaminations", "MedicalExaminations");
+                    }
                 }
             }
 
@@ -189,22 +198,26 @@ namespace MedicalCenter.Web.Controllers
                 return NotFound();
             }
 
-            if (!int.TryParse(editUserDto.SelectedRole, out int selectedRoleId))
+            Role selectedRole = null;
+            if (isAdministrator)
             {
-                return NotFound();
-            }
+                if (!int.TryParse(editUserDto.SelectedRole, out int selectedRoleId))
+                {
+                    return NotFound();
+                }
 
-            Role selectedRole = await _context.Roles.FirstOrDefaultAsync(x => x.ID == selectedRoleId);
+                selectedRole = await _context.Roles.FirstOrDefaultAsync(x => x.ID == selectedRoleId);
 
-            if (selectedRole == null)
-            {
-                return NotFound();
+                if (selectedRole == null)
+                {
+                    return NotFound();
+                }
             }
 
             User user = await _context.Users.FindAsync(id);
 
-            // Ensure that users can only view their own details if he is not an administrator
-            if ((user.ID != HttpContext.Session.GetInt32("UserID")) && !isAdministrator)
+            // Ensure that users can only view their own details(doesn't apply to administrators)
+            if ((user!.ID != HttpContext.Session.GetInt32("UserID")) && !isAdministrator)
             {
                 return RedirectToAction("Logout");
             }
@@ -215,7 +228,10 @@ namespace MedicalCenter.Web.Controllers
                 {
                     user.Name = editUserDto.Name;
                     user.Surname = editUserDto.Surname;
-                    user.Role = selectedRole;
+                    if (isAdministrator)
+                    {
+                        user.Role = selectedRole!;
+                    }
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
