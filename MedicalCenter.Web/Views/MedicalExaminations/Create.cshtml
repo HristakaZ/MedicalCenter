@@ -1,4 +1,4 @@
-﻿@using MedicalCenter.Web.ViewModels
+﻿@using MedicalCenter.Web.ViewModels.MedicalExamination
 @model GetMedicalExaminationViewModel
 @inject IHttpContextAccessor HttpContextAccessor
 
@@ -24,7 +24,6 @@
                 <input asp-for="EndTime" class="form-control" />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
-            <br>
             <div id="availabilityMessage" style="margin-top: 5px;"></div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" id="submitBtn" />

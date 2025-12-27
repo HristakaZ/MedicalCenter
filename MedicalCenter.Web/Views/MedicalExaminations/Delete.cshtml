@@ -1,4 +1,4 @@
-﻿@using MedicalCenter.Web.ViewModels
+﻿@using MedicalCenter.Web.ViewModels.MedicalExamination
 @model GetMedicalExaminationViewModel
 @inject IHttpContextAccessor HttpContextAccessor
 
@@ -8,7 +8,7 @@
 
 <h1>Delete</h1>
 
-<h3>Are you sure you want to delete this medical examination?</h3>
+<h3>Are you sure you want to delete this?</h3>
 <div>
     <h4>MedicalExamination</h4>
     <hr />
@@ -38,12 +38,6 @@
             @Html.DisplayFor(model => model.DoctorName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DoctorSpecialty)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DoctorSpecialty)
-        </dd>
-        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Diagnosis)
         </dt>
         <dd class="col-sm-10">
@@ -56,7 +50,7 @@
             @Html.DisplayFor(model => model.Recommendation)
         </dd>
     </dl>
-    <br>
+    
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

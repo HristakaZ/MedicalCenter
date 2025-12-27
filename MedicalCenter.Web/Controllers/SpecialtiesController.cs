@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using MedicalCenter.Web.Models;
 using MedicalCenter.Web.Attributes;
+using MedicalCenter.Web.ViewModels.Specialty;
+using MedicalCenter.Web.Dtos.Specialty;
 
 namespace MedicalCenter.Web.Controllers
 {
@@ -15,14 +17,21 @@ namespace MedicalCenter.Web.Controllers
         }
 
         // GET: Specialties
-        [AuthenticateAuthorize("Administrator, Doctor")]
+        [AuthenticateAuthorize("Administrator")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Specialties.ToListAsync());
+            List<Specialty> specialties = await _context.Specialties.ToListAsync();
+            List<GetSpecialtyViewModel> getSpecialtyViewModels = new List<GetSpecialtyViewModel>();
+            foreach (var specialty in specialties)
+            {
+                getSpecialtyViewModels.Add(new GetSpecialtyViewModel() { ID = specialty.ID, Description = specialty.Description });
+            }
+
+            return View(getSpecialtyViewModels);
         }
 
         // GET: Specialties/Details/5
-        [AuthenticateAuthorize("Administrator, Doctor")]
+        [AuthenticateAuthorize("Administrator")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -37,11 +46,13 @@ namespace MedicalCenter.Web.Controllers
                 return NotFound();
             }
 
-            return View(specialty);
+            GetSpecialtyViewModel getSpecialtyViewModel = new GetSpecialtyViewModel() { ID = specialty.ID, Description = specialty.Description };
+
+            return View(getSpecialtyViewModel);
         }
 
         // GET: Specialties/Create
-        [AuthenticateAuthorize("Administrator, Doctor")]
+        [AuthenticateAuthorize("Administrator")]
         public IActionResult Create()
         {
             return View();
@@ -52,20 +63,23 @@ namespace MedicalCenter.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuthenticateAuthorize("Administrator, Doctor")]
-        public async Task<IActionResult> Create([Bind("Description,ID")] Specialty specialty)
+        [AuthenticateAuthorize("Administrator")]
+        public async Task<IActionResult> Create(AddSpecialtyDto addSpecialtyDto)
         {
             if (ModelState.IsValid)
             {
+                Specialty specialty = new Specialty() { Description = addSpecialtyDto.Description };
                 _context.Add(specialty);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(specialty);
+
+            GetSpecialtyViewModel getSpecialtyViewModel = new GetSpecialtyViewModel() { Description = addSpecialtyDto.Description };
+            return View(getSpecialtyViewModel);
         }
 
         // GET: Specialties/Edit/5
-        [AuthenticateAuthorize("Administrator, Doctor")]
+        [AuthenticateAuthorize("Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,7 +92,9 @@ namespace MedicalCenter.Web.Controllers
             {
                 return NotFound();
             }
-            return View(specialty);
+
+            GetSpecialtyViewModel getSpecialtyViewModel = new GetSpecialtyViewModel() { ID = specialty.ID, Description = specialty.Description };
+            return View(getSpecialtyViewModel);
         }
 
         // POST: Specialties/Edit/5
@@ -86,10 +102,10 @@ namespace MedicalCenter.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [AuthenticateAuthorize("Administrator, Doctor")]
-        public async Task<IActionResult> Edit(int id, [Bind("Description,ID")] Specialty specialty)
+        [AuthenticateAuthorize("Administrator")]
+        public async Task<IActionResult> Edit(int id, EditSpecialtyDto editSpecialtyDto)
         {
-            if (id != specialty.ID)
+            if (id != editSpecialtyDto.ID)
             {
                 return NotFound();
             }
@@ -98,12 +114,14 @@ namespace MedicalCenter.Web.Controllers
             {
                 try
                 {
+                    Specialty specialty = await _context.Specialties.FindAsync(editSpecialtyDto.ID);
+                    specialty.Description = editSpecialtyDto.Description;
                     _context.Update(specialty);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SpecialtyExists(specialty.ID))
+                    if (!SpecialtyExists(editSpecialtyDto.ID))
                     {
                         return NotFound();
                     }
@@ -114,11 +132,13 @@ namespace MedicalCenter.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(specialty);
+
+            GetSpecialtyViewModel getSpecialtyViewModel = new GetSpecialtyViewModel() { ID = editSpecialtyDto.ID, Description = editSpecialtyDto.Description };
+            return View(getSpecialtyViewModel);
         }
 
         // GET: Specialties/Delete/5
-        [AuthenticateAuthorize("Administrator, Doctor")]
+        [AuthenticateAuthorize("Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -133,13 +153,14 @@ namespace MedicalCenter.Web.Controllers
                 return NotFound();
             }
 
-            return View(specialty);
+            GetSpecialtyViewModel getSpecialtyViewModel = new GetSpecialtyViewModel() { ID = specialty.ID, Description = specialty.Description };
+            return View(getSpecialtyViewModel);
         }
 
         // POST: Specialties/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [AuthenticateAuthorize("Administrator, Doctor")]
+        [AuthenticateAuthorize("Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var specialty = await _context.Specialties.FindAsync(id);

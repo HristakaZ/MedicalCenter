@@ -3,7 +3,7 @@ using MedicalCenter.Web.Constants;
 using MedicalCenter.Web.Dtos.MedicalExamination;
 using MedicalCenter.Web.Dtos.User;
 using MedicalCenter.Web.Models;
-using MedicalCenter.Web.ViewModels;
+using MedicalCenter.Web.ViewModels.MedicalExamination;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

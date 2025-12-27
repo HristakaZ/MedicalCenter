@@ -1,4 +1,4 @@
-﻿namespace MedicalCenter.Web.ViewModels
+﻿namespace MedicalCenter.Web.ViewModels.MedicalExamination
 {
     public class GetMedicalExaminationViewModel
     {
