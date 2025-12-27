@@ -39,7 +39,8 @@ namespace MedicalCenter.Web.Controllers
                     StartTime = medicalExamination.StartTime,
                     EndTime = medicalExamination.EndTime,
                     PatientName = $"{medicalExamination.Patient.Name} {medicalExamination.Patient.Surname}",
-                    DoctorName = $"{medicalExamination.Doctor.Name} {medicalExamination.Doctor.Surname}"
+                    DoctorName = $"{medicalExamination.Doctor.Name} {medicalExamination.Doctor.Surname}",
+                    DoctorSpecialty = $"{medicalExamination.Doctor.Specialty.Description}"
                 });
             }
 
