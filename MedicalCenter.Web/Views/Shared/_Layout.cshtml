@@ -40,6 +40,18 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="MyExaminations">My Medical Examinations</a>
                             </li>
                         }
+                        @if (userRole == "Administrator")
+                        {
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                            </li>
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="Index">Medical Examinations</a>
+                            </li>
+                            <li>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Specialties" asp-action="Index">Doctor Specialties</a>
+                            </li>
+                        }
                         @if (userId.HasValue && userId.Value != 0)
                         {
                             <li class="nav-item dropdown ms-auto">
@@ -48,7 +60,18 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="userDropdown">
                                     <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                        @switch (userRole)
+                                        {
+                                            case "Patient":
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="EditPatient" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                                break;
+                                            case "Doctor":
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="EditDoctor" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                                break;
+                                            case "Administrator":
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                                break;
+                                        }
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Logout">Logout</a>
@@ -63,15 +86,6 @@
                             </li>
                             <li>
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Register">Register</a>
-                            </li>
-                        }
-                        @if (userRole == "Administrator")
-                        {
-                            <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
-                            </li>
-                            <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="Index">Medical Examinations</a>
                             </li>
                         }
                     </ul>

@@ -1,4 +1,5 @@
-﻿@using MedicalCenter.Web.Dtos.User
+﻿@using MedicalCenter.Web.Constants
+@using MedicalCenter.Web.Dtos.User
 @model GetUserDto
 
 @{
@@ -38,6 +39,18 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
+    @switch (Model.Role.ID)
+    {
+        case RoleConstants.AdminRoleId:
+            <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a>
+            break;
+        case RoleConstants.DoctorRoleId:
+            <a asp-action="EditDoctor" asp-route-id="@Model?.ID">Edit</a>
+            break;
+        case RoleConstants.PatientRoleId:
+            <a asp-action="EditPatient" asp-route-id="@Model?.ID">Edit</a>
+            break;
+    }
+    |
     <a asp-action="Index">Back to List</a>
 </div>

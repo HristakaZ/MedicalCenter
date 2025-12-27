@@ -1,4 +1,5 @@
-﻿@using MedicalCenter.Web.Dtos.User
+﻿@using MedicalCenter.Web.Constants
+@using MedicalCenter.Web.Dtos.User
 @model IEnumerable<GetUserDto>
 
 @{
@@ -40,10 +41,22 @@
                     @Html.DisplayFor(modelItem => item.Surname)
                 </td>
                 <td>
-                    <b>@Html.DisplayFor(modelItme => item.Role.Description)</b>
+                    <b>@Html.DisplayFor(modelItem => item.Role.Description)</b>
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    @switch (item.Role.ID)
+                    {
+                        case RoleConstants.AdminRoleId:
+                            <a asp-action="Edit" asp-route-id="@item.ID">Edit</a>
+                            break;
+                        case RoleConstants.DoctorRoleId:
+                            <a asp-action="EditDoctor" asp-route-id="@item.ID">Edit</a>
+                            break;
+                        case RoleConstants.PatientRoleId:
+                            <a asp-action="EditPatient" asp-route-id="@item.ID">Edit</a>
+                            break;
+                    }
+                    |
                     <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
                 </td>

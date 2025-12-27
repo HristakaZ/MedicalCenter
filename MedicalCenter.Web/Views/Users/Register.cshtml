@@ -1,9 +1,22 @@
 ﻿@using MedicalCenter.Web.Dtos.User
-@model RegisterUserDto
+@model RegisterPatientUserDto
 
 @{
     ViewData["Title"] = "Register";
 }
+
+<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+
 
 <h1>Register</h1>
 
@@ -35,6 +48,24 @@
                 <label asp-for="Surname" class="control-label"></label>
                 <input asp-for="Surname" class="form-control" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="SSN" class="control-label"></label>
+                <input asp-for="SSN" class="form-control" type="numeric" maxlength="10" />
+                <span asp-validation-for="SSN" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" maxlength="20" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <br>
+            <div class="form-group">
+                <label class="control-label">Doctor</label>
+                <select asp-for="SelectedDoctor" class="form-control" asp-items="Model.Doctors"></select>
+                <span asp-validation-for="SelectedDoctor" class="text-danger"></span>
             </div>
             <br>
             <div class="form-group">

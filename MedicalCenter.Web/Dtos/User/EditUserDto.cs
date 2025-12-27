@@ -1,6 +1,4 @@
-﻿using MedicalCenter.Web.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MedicalCenter.Web.Dtos.User
 {
@@ -15,9 +13,5 @@ namespace MedicalCenter.Web.Dtos.User
         [MaxLength(50)]
         [Required]
         public string Surname { get; set; }
-
-        public string SelectedRole { get; set; }
-
-        public List<SelectListItem> Roles { get; set; } = new List<SelectListItem>();
     }
 }
