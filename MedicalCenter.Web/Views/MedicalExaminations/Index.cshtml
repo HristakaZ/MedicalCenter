@@ -2,66 +2,92 @@
 @model IEnumerable<GetMedicalExaminationViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Medical Examinations";
+    int pageNumber = ViewBag.PageNumber;
+    int pageSize = ViewBag.PageSize;
+    int totalItems = ViewBag.TotalItems;
+    int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 }
 
-<h1>Index</h1>
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<h1>Medical Examinations</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
-<table class="table">
+
+<!-- FILTER FORM -->
+<form method="get" class="mb-4">
+    <div class="row">
+
+        <div class="col-md-3">
+            <label class="form-label">Doctor Name</label>
+            <input type="text" name="doctorName" value="@ViewBag.DoctorName" class="form-control" placeholder="Search doctor..." />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Patient Name</label>
+            <input type="text" name="patientName" value="@ViewBag.PatientName" class="form-control" placeholder="Search patient..." />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Start Date & Time</label>
+            <input type="text" id="startDate" name="startDate" value="@ViewBag.StartDate" class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">End Date & Time</label>
+            <input type="text" id="endDate" name="endDate" value="@ViewBag.EndDate" class="form-control" />
+        </div>
+
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12 d-flex justify-content-end gap-2">
+
+            <!-- Apply Filters -->
+            <button type="submit" class="btn btn-primary">
+                Apply Filters
+            </button>
+
+            <!-- Clear Filters -->
+            <a href="@Url.Action("Index", "MedicalExaminations")" class="btn btn-secondary">
+                Clear Filters
+            </a>
+
+        </div>
+    </div>
+</form>
+
+<!-- TABLE -->
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PatientName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DoctorName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DoctorSpecialty)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Diagnosis)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Recommendation)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.First().StartTime)</th>
+            <th>@Html.DisplayNameFor(model => model.First().EndTime)</th>
+            <th>@Html.DisplayNameFor(model => model.First().PatientName)</th>
+            <th>@Html.DisplayNameFor(model => model.First().DoctorName)</th>
+            <th>@Html.DisplayNameFor(model => model.First().DoctorSpecialty)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Diagnosis)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Recommendation)</th>
             <th></th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PatientName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DoctorName)
-                </td>
-                <td>
-                    @Html.DisplayNameFor(model => model.DoctorSpecialty)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Diagnosis)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Recommendation)
-                </td>
+                <td>@item.StartTime.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@item.EndTime.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@item.PatientName</td>
+                <td>@item.DoctorName</td>
+                <td>@item.DoctorSpecialty</td>
+                <td>@item.Diagnosis</td>
+                <td>@item.Recommendation</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
@@ -71,3 +97,62 @@
         }
     </tbody>
 </table>
+
+<!-- PAGINATION -->
+@if (totalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+
+            @if (pageNumber > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?pageNumber=@(pageNumber - 1)&doctorName=@ViewBag.DoctorName&patientName=@ViewBag.PatientName&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">
+                        Previous
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == pageNumber ? "active" : "")">
+                    <a class="page-link"
+                       href="?pageNumber=@i&doctorName=@ViewBag.DoctorName&patientName=@ViewBag.PatientName&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (pageNumber < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?pageNumber=@(pageNumber + 1)&doctorName=@ViewBag.DoctorName&patientName=@ViewBag.PatientName&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">
+                        Next
+                    </a>
+                </li>
+            }
+
+        </ul>
+    </nav>
+}
+
+<!-- FLATPICKR INITIALIZATION -->
+<script>
+    flatpickr("#startDate", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        minuteIncrement: 30,
+        allowInput: true
+    });
+
+    flatpickr("#endDate", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        time_24hr: true,
+        minuteIncrement: 30,
+        allowInput: true
+    });
+</script>

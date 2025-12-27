@@ -23,67 +23,158 @@ namespace MedicalCenter.Web.Controllers
             _isAdministrator = _loggedInUser.Role.Description == "Administrator";
         }
 
-        // GET: MedicalExaminations
         [AuthenticateAuthorize("Administrator")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string doctorName,
+                                               string patientName,
+                                               DateTime? startDate,
+                                               DateTime? endDate,
+                                               int pageNumber = 1,
+                                               int pageSize = 10)
         {
-            var medicalExaminations = await _context.MedicalExaminations.ToListAsync();
-            List<GetMedicalExaminationViewModel> medicalExaminationDtos = new List<GetMedicalExaminationViewModel>();
-            foreach (var medicalExamination in medicalExaminations)
+            var query = _context.MedicalExaminations
+                .AsQueryable();
+
+            // Doctor name filter
+            if (!string.IsNullOrWhiteSpace(doctorName))
             {
-                medicalExaminationDtos.Add(new GetMedicalExaminationViewModel()
-                {
-                    ID = medicalExamination.ID,
-                    Diagnosis = medicalExamination.Diagnosis,
-                    Recommendation = medicalExamination.Recommendation,
-                    StartTime = medicalExamination.StartTime,
-                    EndTime = medicalExamination.EndTime,
-                    PatientName = $"{medicalExamination.Patient.Name} {medicalExamination.Patient.Surname}",
-                    DoctorName = $"{medicalExamination.Doctor.Name} {medicalExamination.Doctor.Surname}",
-                    DoctorSpecialty = $"{medicalExamination.Doctor.Specialty.Description}"
-                });
+                string dn = doctorName.Trim().ToLower();
+                query = query.Where(m =>
+                    (m.Doctor.Name + " " + m.Doctor.Surname).ToLower().Contains(dn));
             }
 
-            return View(medicalExaminationDtos);
+            // Patient name filter
+            if (!string.IsNullOrWhiteSpace(patientName))
+            {
+                string pn = patientName.Trim().ToLower();
+                query = query.Where(m =>
+                    (m.Patient.Name + " " + m.Patient.Surname).ToLower().Contains(pn));
+            }
+
+            // Correct BETWEEN date range filtering
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                query = query.Where(m =>
+                    m.StartTime >= startDate.Value &&
+                    m.StartTime <= endDate.Value);
+            }
+            else if (startDate.HasValue)
+            {
+                query = query.Where(m => m.StartTime >= startDate.Value);
+            }
+            else if (endDate.HasValue)
+            {
+                query = query.Where(m => m.StartTime <= endDate.Value);
+            }
+
+            // Pagination
+            int totalItems = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(m => m.StartTime)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Map to DTO
+            var dtos = items.Select(m => new GetMedicalExaminationViewModel
+            {
+                ID = m.ID,
+                Diagnosis = m.Diagnosis,
+                Recommendation = m.Recommendation,
+                StartTime = m.StartTime,
+                EndTime = m.EndTime,
+                PatientName = $"{m.Patient.Name} {m.Patient.Surname}",
+                DoctorName = $"{m.Doctor.Name} {m.Doctor.Surname}",
+                DoctorSpecialty = m.Doctor.Specialty.Description
+            }).ToList();
+
+            // Pass filter values back to view
+            ViewBag.DoctorName = doctorName;
+            ViewBag.PatientName = patientName;
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd HH:mm");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd HH:mm");
+
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+
+            return View(dtos);
         }
 
-        [AuthenticateAuthorize]
-        public IActionResult MyExaminations()
+        [AuthenticateAuthorize("Doctor", "Patient")]
+        public async Task<IActionResult> MyExaminations(DateTime? startDate,
+                                                        DateTime? endDate,
+                                                        int pageNumber = 1,
+                                                        int pageSize = 10)
         {
             string role = _loggedInUser.Role.Description;
             int userId = _loggedInUser.ID;
-            List<MedicalExamination> medicalExaminations = new List<MedicalExamination>();
+
+            var query = _context.MedicalExaminations
+                .Include(m => m.Patient)
+                .Include(m => m.Doctor)
+                    .ThenInclude(d => d.Specialty)
+                .AsQueryable();
+
+            // Filter by logged-in user
             if (role == "Doctor")
             {
-                medicalExaminations = _context.MedicalExaminations
-                    .Where(me => me.Doctor.ID == userId)
-                    .ToList();
+                query = query.Where(me => me.Doctor.ID == userId);
             }
             else if (role == "Patient")
             {
-                medicalExaminations = _context.MedicalExaminations
-                    .Where(me => me.Patient.ID == userId)
-                    .ToList();
+                query = query.Where(me => me.Patient.ID == userId);
             }
 
-            List<GetMedicalExaminationViewModel> medicalExaminationDtos = new List<GetMedicalExaminationViewModel>();
-            foreach (var medicalExamination in medicalExaminations)
+            // Correct BETWEEN date range filtering
+            if (startDate.HasValue && endDate.HasValue)
             {
-                medicalExaminationDtos.Add(new GetMedicalExaminationViewModel()
-                {
-                    ID = medicalExamination.ID,
-                    Diagnosis = medicalExamination.Diagnosis,
-                    Recommendation = medicalExamination.Recommendation,
-                    StartTime = medicalExamination.StartTime,
-                    EndTime = medicalExamination.EndTime,
-                    PatientName = $"{medicalExamination.Patient.Name} {medicalExamination.Patient.Surname}",
-                    DoctorName = $"{medicalExamination.Doctor.Name} {medicalExamination.Doctor.Surname}",
-                    DoctorSpecialty = $"{medicalExamination.Doctor.Specialty.Description}"
-                });
+                query = query.Where(m =>
+                    m.StartTime >= startDate.Value &&
+                    m.StartTime <= endDate.Value);
+            }
+            else if (startDate.HasValue)
+            {
+                query = query.Where(m => m.StartTime >= startDate.Value);
+            }
+            else if (endDate.HasValue)
+            {
+                query = query.Where(m => m.StartTime <= endDate.Value);
             }
 
-            return View(medicalExaminationDtos);
+            // Pagination
+            int totalItems = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(m => m.StartTime)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Map to DTO
+            var dtos = items.Select(m => new GetMedicalExaminationViewModel
+            {
+                ID = m.ID,
+                Diagnosis = m.Diagnosis,
+                Recommendation = m.Recommendation,
+                StartTime = m.StartTime,
+                EndTime = m.EndTime,
+                PatientName = $"{m.Patient.Name} {m.Patient.Surname}",
+                DoctorName = $"{m.Doctor.Name} {m.Doctor.Surname}",
+                DoctorSpecialty = m.Doctor.Specialty.Description
+            }).ToList();
+
+            // Pass filter values back to view
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd HH:mm");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd HH:mm");
+
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+
+            return View(dtos);
         }
+
 
         // GET: MedicalExaminations/Details/5
         [AuthenticateAuthorize]
@@ -266,18 +357,21 @@ namespace MedicalCenter.Web.Controllers
             {
                 try
                 {
-                    if (editMedicalExaminationDto.StartTime >= editMedicalExaminationDto.EndTime)
+                    if (editMedicalExaminationDto.StartTime != medicalExamination.StartTime || editMedicalExaminationDto.EndTime != medicalExamination.EndTime)
                     {
-                        ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "End time must be later than start time.");
-                        ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "End time must be later than start time.");
-                        return View(getMedicalExaminationViewModel);
-                    }
+                        if (editMedicalExaminationDto.StartTime >= editMedicalExaminationDto.EndTime)
+                        {
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "End time must be later than start time.");
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "End time must be later than start time.");
+                            return View(getMedicalExaminationViewModel);
+                        }
 
-                    if (await IsMedicalExaminationConflictingForDoctorAsync(medicalExamination.DoctorID, editMedicalExaminationDto.StartTime, editMedicalExaminationDto.EndTime))
-                    {
-                        ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "The doctor already has a medical examination scheduled during this time.");
-                        ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "The doctor already has a medical examination scheduled during this time.");
-                        return View(getMedicalExaminationViewModel);
+                        if (await IsMedicalExaminationConflictingForDoctorAsync(medicalExamination.DoctorID, editMedicalExaminationDto.StartTime, editMedicalExaminationDto.EndTime))
+                        {
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "The doctor already has a medical examination scheduled during this time.");
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "The doctor already has a medical examination scheduled during this time.");
+                            return View(getMedicalExaminationViewModel);
+                        }
                     }
 
                     bool isLoggedInUserDoctor = _loggedInUser.RoleID == RoleConstants.DoctorRoleId;
