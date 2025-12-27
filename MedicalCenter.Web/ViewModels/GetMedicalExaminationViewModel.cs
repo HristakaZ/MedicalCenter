@@ -1,6 +1,6 @@
-﻿namespace MedicalCenter.Web.Dtos.MedicalExamination
+﻿namespace MedicalCenter.Web.ViewModels
 {
-    public class GetMedicalExaminationDto
+    public class GetMedicalExaminationViewModel
     {
         public int ID { get; set; }
 
@@ -15,5 +15,7 @@
         public string PatientName { get; set; }
 
         public string DoctorName { get; set; }
+
+        public string DoctorSpecialty { get; set; }
     }
 }

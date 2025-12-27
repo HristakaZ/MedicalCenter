@@ -1,13 +1,14 @@
-﻿@model MedicalCenter.Web.Dtos.MedicalExamination.EditMedicalExaminationDto
+﻿@using MedicalCenter.Web.ViewModels
+@model GetMedicalExaminationViewModel
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Medical Examination appointment</h1>
 
-<h4>EditMedicalExaminationDto</h4>
+<h4>Doctor @Model.DoctorName - @Model.DoctorSpecialty</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -24,11 +25,6 @@
                 <input asp-for="EndTime" class="form-control" />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label class="control-label">Doctor</label>
-                <select asp-for="SelectedDoctor" class="form-control" asp-items="Model.Doctors"></select>
-                <span asp-validation-for="SelectedDoctor" class="text-danger"></span>
-            </div>
             @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Doctor")
             {
                 <div class="form-group">
@@ -42,6 +38,7 @@
                     <span asp-validation-for="Recommendation" class="text-danger"></span>
                 </div>
             }
+            <br>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

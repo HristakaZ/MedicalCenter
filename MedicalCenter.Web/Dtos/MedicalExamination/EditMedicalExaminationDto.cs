@@ -16,13 +16,5 @@ namespace MedicalCenter.Web.Dtos.MedicalExamination
         public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }
-
-        public int PatientId { get; set; }
-
-        public int DoctorId { get; set; }
-
-        public string SelectedDoctor { get; set; }
-
-        public List<SelectListItem> Doctors { get; set; } = new List<SelectListItem>();
     }
 }

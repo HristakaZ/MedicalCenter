@@ -1,5 +1,5 @@
-﻿@using MedicalCenter.Web.Dtos.MedicalExamination
-@model GetMedicalExaminationDto
+﻿@using MedicalCenter.Web.ViewModels
+@model GetMedicalExaminationViewModel
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
@@ -47,6 +47,12 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Recommendation)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DoctorSpecialty)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DoctorSpecialty)
         </dd>
     </dl>
 </div>
