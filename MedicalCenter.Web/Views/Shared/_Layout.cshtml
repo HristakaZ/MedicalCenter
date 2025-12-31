@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MedicalCenter.Web</title>
+    <title>@ViewData["Title"] - Медицински център</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -21,35 +21,29 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MedicalCenter.Web</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Медицински център</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
                         @if (userRole == "Patient" || userRole == "Doctor")
                         {
                             <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="MyExaminations">My Medical Examinations</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="MyExaminations">Моите медицински прегледи</a>
                             </li>
                         }
                         @if (userRole == "Administrator")
                         {
                             <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Потребители</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="Index">Medical Examinations</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="MedicalExaminations" asp-action="Index">Всички медицински прегледи</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Specialties" asp-action="Index">Doctor Specialties</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Specialties" asp-action="Index">Докторски специалности</a>
                             </li>
                         }
                         @if (userId.HasValue && userId.Value != 0)
@@ -63,18 +57,21 @@
                                         @switch (userRole)
                                         {
                                             case "Patient":
-                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="EditPatient" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="EditPatient" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Профил</a>
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="ChangePassword" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Смяна на парола</a>
                                                 break;
                                             case "Doctor":
-                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="EditDoctor" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="EditDoctor" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Профил</a>
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="ChangePassword" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Смяна на парола</a>
                                                 break;
                                             case "Administrator":
-                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Profile</a>
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Профил</a>
+                                                <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="ChangePassword" asp-route-id="@(HttpContextAccessor.HttpContext.Session.GetInt32("UserID"))">Смяна на парола</a>
                                                 break;
                                         }
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Logout">Logout</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Logout">Излизане</a>
                                     </li>
                                 </ul>
                             </li>
@@ -82,10 +79,10 @@
                         else
                         {
                             <li class="ms-auto">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Login">Login</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Login">Логин</a>
                             </li>
                             <li>
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Register">Register</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Register">Регистрация</a>
                             </li>
                         }
                     </ul>
@@ -99,11 +96,11 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    @*     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - MedicalCenter.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

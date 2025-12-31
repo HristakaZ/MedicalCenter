@@ -2,7 +2,7 @@
 @model IEnumerable<GetMedicalExaminationViewModel>
 
 @{
-    ViewData["Title"] = "Medical Examinations";
+    ViewData["Title"] = "Всички медицински прегледи";
     int pageNumber = ViewBag.PageNumber;
     int pageSize = ViewBag.PageSize;
     int totalItems = ViewBag.TotalItems;
@@ -13,56 +13,44 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<h1>Medical Examinations</h1>
+<h1>Всички медицински прегледи</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
-</p>
-
-<!-- FILTER FORM -->
 <form method="get" class="mb-4">
     <div class="row">
-
         <div class="col-md-3">
-            <label class="form-label">Doctor Name</label>
-            <input type="text" name="doctorName" value="@ViewBag.DoctorName" class="form-control" placeholder="Search doctor..." />
+            <label class="form-label">Име на доктор</label>
+            <input type="text" name="doctorName" value="@ViewBag.DoctorName" class="form-control" placeholder="Търсене по доктор..." />
         </div>
 
         <div class="col-md-3">
-            <label class="form-label">Patient Name</label>
-            <input type="text" name="patientName" value="@ViewBag.PatientName" class="form-control" placeholder="Search patient..." />
+            <label class="form-label">Име на пациент</label>
+            <input type="text" name="patientName" value="@ViewBag.PatientName" class="form-control" placeholder="Търсене по пациент..." />
         </div>
 
         <div class="col-md-3">
-            <label class="form-label">Start Date & Time</label>
+            <label class="form-label">Начални дата и час</label>
             <input type="text" id="startDate" name="startDate" value="@ViewBag.StartDate" class="form-control" />
         </div>
 
         <div class="col-md-3">
-            <label class="form-label">End Date & Time</label>
+            <label class="form-label">Крайни дата и час</label>
             <input type="text" id="endDate" name="endDate" value="@ViewBag.EndDate" class="form-control" />
         </div>
-
     </div>
 
     <div class="row mt-3">
         <div class="col-md-12 d-flex justify-content-end gap-2">
-
-            <!-- Apply Filters -->
             <button type="submit" class="btn btn-primary">
-                Apply Filters
+                Прилагане на филтри
             </button>
 
-            <!-- Clear Filters -->
             <a href="@Url.Action("Index", "MedicalExaminations")" class="btn btn-secondary">
-                Clear Filters
+                Изчистване на филтри
             </a>
-
         </div>
     </div>
 </form>
 
-<!-- TABLE -->
 <table class="table table-striped">
     <thead>
         <tr>
@@ -89,27 +77,23 @@
                 <td>@item.Diagnosis</td>
                 <td>@item.Recommendation</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.ID">Детайли</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- PAGINATION -->
 @if (totalPages > 1)
 {
     <nav>
         <ul class="pagination">
-
             @if (pageNumber > 1)
             {
                 <li class="page-item">
                     <a class="page-link"
                        href="?pageNumber=@(pageNumber - 1)&doctorName=@ViewBag.DoctorName&patientName=@ViewBag.PatientName&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">
-                        Previous
+                        Предишна страница
                     </a>
                 </li>
             }
@@ -129,11 +113,10 @@
                 <li class="page-item">
                     <a class="page-link"
                        href="?pageNumber=@(pageNumber + 1)&doctorName=@ViewBag.DoctorName&patientName=@ViewBag.PatientName&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">
-                        Next
+                        Следваща страница
                     </a>
                 </li>
             }
-
         </ul>
     </nav>
 }

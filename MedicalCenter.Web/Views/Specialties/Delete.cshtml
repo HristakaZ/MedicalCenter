@@ -2,14 +2,14 @@
 @model GetSpecialtyViewModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Изтриване на докторска специалност";
 }
 
-<h1>Delete</h1>
+<h1>Изтриване на докторска специалност</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Сигурни ли сте, че искате да изтриете тази докторска специалност?</h3>
 <div>
-    <h4>Specialty</h4>
+    <h4>Докторска специалност</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -22,7 +22,7 @@
     <br>
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Изтриване" class="btn btn-danger" /> |
+        <a asp-action="Index">ОБратно към всички докторски специалности</a>
     </form>
 </div>

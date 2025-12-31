@@ -3,12 +3,12 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактиране на медицински преглед";
 }
 
-<h1>Medical Examination appointment</h1>
+<h1>Редактиране на медицински преглед</h1>
 
-<h4>Doctor @Model.DoctorName - @Model.DoctorSpecialty</h4>
+<h4>Доктор @Model.DoctorName - @Model.DoctorSpecialty</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -40,7 +40,7 @@
             }
             <br>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Запис" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -49,11 +49,11 @@
 <div>
     @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
     {
-        <a asp-action="MyExaminations">Back to List</a>
+        <a asp-action="MyExaminations">Обратно към моите медицински прегледи</a>
     }
     else
     {
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index">Обратно към всички медицински прегледи</a>
     }
 </div>
 

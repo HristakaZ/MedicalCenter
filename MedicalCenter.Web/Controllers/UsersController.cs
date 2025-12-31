@@ -206,7 +206,7 @@ namespace MedicalCenter.Web.Controllers
                 }
             }
 
-            string error = "Invalid email or password.";
+            string error = "Грешни имейл или парола.";
             ModelState.AddModelError(nameof(loginUserDto.Email), error);
             ModelState.AddModelError(nameof(loginUserDto.Password), error);
 
@@ -556,6 +556,7 @@ namespace MedicalCenter.Web.Controllers
             {
                 UserID = user.ID
             };
+
             return View(changePasswordDto);
         }
 
@@ -578,7 +579,8 @@ namespace MedicalCenter.Web.Controllers
             bool arePasswordsMatching = user!.Password == HashPassword(changePasswordDto.CurrentPassword);
             if (!arePasswordsMatching)
             {
-                return NotFound();
+                ModelState.AddModelError(nameof(changePasswordDto.CurrentPassword), "Грешна текуща парола.");
+                return View(changePasswordDto);
             }
 
             if (ModelState.IsValid)
@@ -602,6 +604,7 @@ namespace MedicalCenter.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(changePasswordDto);
         }
 
@@ -646,7 +649,35 @@ namespace MedicalCenter.Web.Controllers
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
-                _context.Users.Remove(user);
+                // Ensure that users can only view their own details if he is not an administrator
+                if ((user.ID != HttpContext.Session.GetInt32("UserID")) && !isAdministrator)
+                {
+                    return RedirectToAction("Logout");
+                }
+
+                // Ensure that the administrator cannot delete himself
+                if (user.ID == HttpContext.Session.GetInt32("UserID") && isAdministrator)
+                {
+                    return RedirectToAction("Logout");
+                }
+
+                if ((user is Patient || user is Doctor) && (_context.MedicalExaminations.Any(me => me.PatientID == user.ID || me.DoctorID == user.ID)))
+                {
+                    var userDto = new GetUserDto()
+                    {
+                        ID = user.ID,
+                        Email = user.Email,
+                        Name = user.Name,
+                        Surname = user.Surname,
+                        Role = user.Role
+                    };
+                    ModelState.AddModelError("CannotDeleteUser", "Потребителят участва в медицински прегледи и не може да бъде изтрит.");
+                    return View(userDto);
+                }
+                else
+                {
+                    _context.Users.Remove(user);
+                }
             }
 
             await _context.SaveChangesAsync();

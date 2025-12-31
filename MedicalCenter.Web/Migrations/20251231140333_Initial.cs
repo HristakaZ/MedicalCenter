@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -43,7 +44,7 @@ namespace MedicalCenter.Web.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     RoleID = table.Column<int>(type: "int", nullable: false)
@@ -90,39 +91,22 @@ namespace MedicalCenter.Web.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false),
                     SSN = table.Column<int>(type: "int", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    DoctorID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Patients", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Patients_Users_ID",
-                        column: x => x.ID,
-                        principalTable: "Users",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DoctorsPatients",
-                columns: table => new
-                {
-                    DoctorID = table.Column<int>(type: "int", nullable: false),
-                    PatientID = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DoctorsPatients", x => new { x.DoctorID, x.PatientID });
-                    table.ForeignKey(
-                        name: "FK_DoctorsPatients_Doctors_DoctorID",
+                        name: "FK_Patients_Doctors_DoctorID",
                         column: x => x.DoctorID,
                         principalTable: "Doctors",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_DoctorsPatients_Patients_PatientID",
-                        column: x => x.PatientID,
-                        principalTable: "Patients",
+                        name: "FK_Patients_Users_ID",
+                        column: x => x.ID,
+                        principalTable: "Users",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -135,6 +119,8 @@ namespace MedicalCenter.Web.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Diagnosis = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Recommendation = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PatientID = table.Column<int>(type: "int", nullable: false),
                     DoctorID = table.Column<int>(type: "int", nullable: false)
                 },
@@ -146,19 +132,14 @@ namespace MedicalCenter.Web.Migrations
                         column: x => x.DoctorID,
                         principalTable: "Doctors",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MedicalExaminations_Patients_PatientID",
                         column: x => x.PatientID,
                         principalTable: "Patients",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DoctorsPatients_PatientID_DoctorID",
-                table: "DoctorsPatients",
-                columns: new[] { "PatientID", "DoctorID" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_SpecialtyID",
@@ -176,6 +157,11 @@ namespace MedicalCenter.Web.Migrations
                 column: "PatientID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Patients_DoctorID",
+                table: "Patients",
+                column: "DoctorID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleID",
                 table: "Users",
                 column: "RoleID");
@@ -185,16 +171,13 @@ namespace MedicalCenter.Web.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DoctorsPatients");
-
-            migrationBuilder.DropTable(
                 name: "MedicalExaminations");
 
             migrationBuilder.DropTable(
-                name: "Doctors");
+                name: "Patients");
 
             migrationBuilder.DropTable(
-                name: "Patients");
+                name: "Doctors");
 
             migrationBuilder.DropTable(
                 name: "Specialties");

@@ -3,14 +3,14 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Изтриване на медицински преглед";
 }
 
-<h1>Delete</h1>
+<h1>Изтриване на запис</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Сигурни ли сте, че искате да изтриете този медицински преглед?</h3>
 <div>
-    <h4>MedicalExamination</h4>
+    <h4>Медицински преглед</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -53,14 +53,14 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Изтриване" class="btn btn-danger" /> |
         @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
         {
-            <a asp-action="MyExaminations">Back to List</a>
+            <a asp-action="MyExaminations">Обратно към моите медицински прегледи</a>
         }
         else
         {
-            <a asp-action="Index">Back to List</a>
+            <a asp-action="Index">Обратно към всички медицински прегледи</a>
         }
     </form>
 </div>

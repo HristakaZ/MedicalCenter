@@ -1,3 +1,4 @@
+using MedicalCenter.Web.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicalCenter.Web
@@ -10,7 +11,7 @@ namespace MedicalCenter.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<Models.MedicalCenterDbContext>(options =>
+            builder.Services.AddDbContext<MedicalCenterDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MedicalCenterDatabaseConnectionString"))
                        .UseLazyLoadingProxies());
             builder.Services.AddHttpContextAccessor();

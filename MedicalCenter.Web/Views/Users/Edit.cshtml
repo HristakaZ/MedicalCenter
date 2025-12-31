@@ -3,12 +3,12 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактиране на потребител";
 }
 
-<h1>Edit</h1>
+<h1>Редактиране</h1>
 
-<h4>User</h4>
+<h4>Потребител</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,22 +19,24 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <br>
             <div class="form-group">
                 <label asp-for="Surname" class="control-label"></label>
                 <input asp-for="Surname" class="form-control" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
+            <br>
             <input type="hidden" asp-for="ID" />
             <br>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Запис" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Обратно към всички потребители</a>
 </div>
 
 @section Scripts {

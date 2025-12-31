@@ -253,15 +253,15 @@ namespace MedicalCenter.Web.Controllers
 
                 if (addMedicalExaminationDto.StartTime >= addMedicalExaminationDto.EndTime)
                 {
-                    ModelState.AddModelError(nameof(addMedicalExaminationDto.StartTime), "End time must be later than start time.");
-                    ModelState.AddModelError(nameof(addMedicalExaminationDto.EndTime), "End time must be later than start time.");
+                    ModelState.AddModelError(nameof(addMedicalExaminationDto.StartTime), "Крайните дата и час трябва да са по - късни от началните.");
+                    ModelState.AddModelError(nameof(addMedicalExaminationDto.EndTime), "Крайните дата и час трябва да са по - късни от началните.");
                     return View(getMedicalExaminationViewModel);
                 }
 
                 if (await IsMedicalExaminationConflictingForDoctorAsync(doctor.ID, addMedicalExaminationDto.StartTime, addMedicalExaminationDto.EndTime))
                 {
-                    ModelState.AddModelError(nameof(addMedicalExaminationDto.StartTime), "The doctor already has a medical examination scheduled during this time.");
-                    ModelState.AddModelError(nameof(addMedicalExaminationDto.EndTime), "The doctor already has a medical examination scheduled during this time.");
+                    ModelState.AddModelError(nameof(addMedicalExaminationDto.StartTime), "Докторът има медицински преглед по това време.");
+                    ModelState.AddModelError(nameof(addMedicalExaminationDto.EndTime), "Докторът има медицински преглед по това време.");
                     return View(getMedicalExaminationViewModel);
                 }
 
@@ -358,15 +358,15 @@ namespace MedicalCenter.Web.Controllers
                     {
                         if (editMedicalExaminationDto.StartTime >= editMedicalExaminationDto.EndTime)
                         {
-                            ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "End time must be later than start time.");
-                            ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "End time must be later than start time.");
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "Крайните дата и час трябва да са по - късни от началните.");
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "Крайните дата и час трябва да са по - късни от началните.");
                             return View(getMedicalExaminationViewModel);
                         }
 
                         if (await IsMedicalExaminationConflictingForDoctorAsync(medicalExamination.DoctorID, editMedicalExaminationDto.StartTime, editMedicalExaminationDto.EndTime))
                         {
-                            ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "The doctor already has a medical examination scheduled during this time.");
-                            ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "The doctor already has a medical examination scheduled during this time.");
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.StartTime), "Докторът има медицински преглед по това време.");
+                            ModelState.AddModelError(nameof(editMedicalExaminationDto.EndTime), "Докторът има медицински преглед по това време.");
                             return View(getMedicalExaminationViewModel);
                         }
                     }

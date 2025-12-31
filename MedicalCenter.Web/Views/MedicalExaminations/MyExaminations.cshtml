@@ -1,56 +1,55 @@
 ﻿@using MedicalCenter.Web.ViewModels.MedicalExamination
 @model IEnumerable<GetMedicalExaminationViewModel>
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "My Examinations";
+    ViewData["Title"] = "Моите медицински прегледи";
     int pageNumber = ViewBag.PageNumber;
     int pageSize = ViewBag.PageSize;
     int totalItems = ViewBag.TotalItems;
     int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+    string userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
 }
 
 <!-- Flatpickr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<h1>My Examinations</h1>
+<h1>Моите медицински прегледи</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
-</p>
+@if (userRole == "Patient")
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Създаване на нов</a>
+    </p>
+}
 
-<!-- FILTER FORM -->
 <form method="get" class="mb-4">
     <div class="row">
-
         <div class="col-md-6">
-            <label class="form-label">Start Date & Time</label>
+            <label class="form-label">Начални дата и час</label>
             <input type="text" id="startDate" name="startDate" value="@ViewBag.StartDate" class="form-control" />
         </div>
 
         <div class="col-md-6">
-            <label class="form-label">End Date & Time</label>
+            <label class="form-label">Крайни дата и час</label>
             <input type="text" id="endDate" name="endDate" value="@ViewBag.EndDate" class="form-control" />
         </div>
-
     </div>
 
     <div class="row mt-3">
         <div class="col-md-12 d-flex justify-content-end gap-2">
-
             <button type="submit" class="btn btn-primary">
-                Apply Filters
+                Прилагане на филтри
             </button>
 
             <a href="@Url.Action("MyExaminations", "MedicalExaminations")" class="btn btn-secondary">
-                Clear Filters
+                Изчистване на филтри
             </a>
-
         </div>
     </div>
 </form>
 
-<!-- TABLE -->
 <table class="table table-striped">
     <thead>
         <tr>
@@ -75,27 +74,28 @@
                 <td>@item.Diagnosis</td>
                 <td>@item.Recommendation</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Редактиране</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Детайли</a>
+                    @if (userRole == "Patient")
+                    {
+                        <text>| <a asp-action="Delete" asp-route-id="@item.ID">Изтриване</a></text>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- PAGINATION -->
 @if (totalPages > 1)
 {
     <nav>
         <ul class="pagination">
-
             @if (pageNumber > 1)
             {
                 <li class="page-item">
                     <a class="page-link"
                        href="?pageNumber=@(pageNumber - 1)&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">
-                        Previous
+                        Предишна страница
                     </a>
                 </li>
             }
@@ -115,11 +115,10 @@
                 <li class="page-item">
                     <a class="page-link"
                        href="?pageNumber=@(pageNumber + 1)&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">
-                        Next
+                        Следваща страница
                     </a>
                 </li>
             }
-
         </ul>
     </nav>
 }

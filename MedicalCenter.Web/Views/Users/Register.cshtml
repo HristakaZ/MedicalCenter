@@ -2,7 +2,7 @@
 @model RegisterPatientUserDto
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Регистрация на пациент";
 }
 
 <style>
@@ -18,9 +18,9 @@
 </style>
 
 
-<h1>Register</h1>
+<h1>Регистрация на пациент</h1>
 
-<h4>User</h4>
+<h4>Пациент</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -34,7 +34,7 @@
             <br>
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+                <input asp-for="Password" class="form-control" type="password"/>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <br>
@@ -63,13 +63,13 @@
             </div>
             <br>
             <div class="form-group">
-                <label class="control-label">Doctor</label>
+                <label asp-for="SelectedDoctor" class="control-label"></label>
                 <select asp-for="SelectedDoctor" class="form-control" asp-items="Model.Doctors"></select>
                 <span asp-validation-for="SelectedDoctor" class="text-danger"></span>
             </div>
             <br>
             <div class="form-group">
-                <input type="submit" value="Register" class="btn btn-primary" />
+                <input type="submit" value="Регистрация" class="btn btn-primary" />
             </div>
         </form>
     </div>

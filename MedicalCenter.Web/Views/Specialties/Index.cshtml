@@ -2,37 +2,33 @@
 @model IEnumerable<GetSpecialtyViewModel>
 
 @{
-    ViewData["Title"] = "Specialties";
+    ViewData["Title"] = "Всички докторски специалности";
     int pageNumber = ViewBag.PageNumber;
     int pageSize = ViewBag.PageSize;
     int totalItems = ViewBag.TotalItems;
     int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 }
 
-<h1>Specialties</h1>
+<h1>Всички докторски специалности</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-success">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Създаване на нова докторска специалност</a>
 </p>
 
-<!-- FILTER FORM -->
 <form method="get" class="mb-4">
     <div class="row">
-
         <div class="col-md-6">
-            <label class="form-label">Description</label>
-            <input type="text" name="description" value="@ViewBag.Description" class="form-control" placeholder="Search description..." />
+            <label class="form-label">Описание</label>
+            <input type="text" name="description" value="@ViewBag.Description" class="form-control" placeholder="Търсене по описание..." />
         </div>
 
         <div class="col-md-6 d-flex align-items-end gap-2">
-            <button type="submit" class="btn btn-primary">Apply Filters</button>
-            <a href="@Url.Action("Index", "Specialties")" class="btn btn-secondary">Clear Filters</a>
+            <button type="submit" class="btn btn-primary">Прилагане на филтри</button>
+            <a href="@Url.Action("Index", "Specialties")" class="btn btn-secondary">Изчистване на филтри</a>
         </div>
-
     </div>
 </form>
 
-<!-- TABLE -->
 <table class="table table-striped">
     <thead>
         <tr>
@@ -47,27 +43,25 @@
             <tr>
                 <td>@item.Description</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Редактиране</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Детайли</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Изтриване</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- PAGINATION -->
 @if (totalPages > 1)
 {
     <nav>
         <ul class="pagination">
-
             @if (pageNumber > 1)
             {
                 <li class="page-item">
                     <a class="page-link"
                        href="?pageNumber=@(pageNumber - 1)&description=@ViewBag.Description">
-                        Previous
+                        Предишна страница
                     </a>
                 </li>
             }
@@ -87,11 +81,10 @@
                 <li class="page-item">
                     <a class="page-link"
                        href="?pageNumber=@(pageNumber + 1)&description=@ViewBag.Description">
-                        Next
+                        Следваща страница
                     </a>
                 </li>
             }
-
         </ul>
     </nav>
 }

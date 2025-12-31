@@ -3,7 +3,7 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    ViewData["Title"] = "EditPatient";
+    ViewData["Title"] = "Редактиране на пациент";
     bool isAdministrator = HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator";
 }
 
@@ -19,9 +19,9 @@
     }
 </style>
 
-<h1>EditPatient</h1>
+<h1>Редактиране на пациент</h1>
 
-<h4>Patient</h4>
+<h4>Пациент</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -32,38 +32,42 @@
                 <input asp-for="SSN" class="form-control" type="numeric" maxlength="10" />
                 <span asp-validation-for="SSN" class="text-danger"></span>
             </div>
+            <br>
             <div class="form-group">
                 <label asp-for="PhoneNumber" class="control-label"></label>
                 <input asp-for="PhoneNumber" class="form-control" maxlength="20" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
+            <br>
             <div class="form-group">
-                <label class="control-label">Doctor</label>
+                <label class="control-label">Доктор</label>
                 <select asp-for="SelectedDoctor" class="form-control" asp-items="Model.Doctors"></select>
                 <span asp-validation-for="SelectedDoctor" class="text-danger"></span>
             </div>
+            <br>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            <br>
             <div class="form-group">
                 <label asp-for="Surname" class="control-label"></label>
                 <input asp-for="Surname" class="form-control" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
+            <br>
             @if (isAdministrator)
             {
                 <div class="form-group">
-                    <label class="control-label">Roles</label>
+                    <label class="control-label">Роля</label>
                     <select asp-for="SelectedRole" class="form-control" asp-items="Model.Roles"></select>
                     <span asp-validation-for="SelectedRole" class="text-danger"></span>
                 </div>
             }
             <input type="hidden" asp-for="ID" />
-            <br>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Запис" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -72,7 +76,7 @@
 @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator")
 {
     <div>
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index">Обратно към всички потребители</a>
     </div>
 }
 
