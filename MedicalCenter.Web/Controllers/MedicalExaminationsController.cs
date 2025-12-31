@@ -1,11 +1,9 @@
 ﻿using MedicalCenter.Web.Attributes;
 using MedicalCenter.Web.Constants;
 using MedicalCenter.Web.Dtos.MedicalExamination;
-using MedicalCenter.Web.Dtos.User;
 using MedicalCenter.Web.Models;
 using MedicalCenter.Web.ViewModels.MedicalExamination;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicalCenter.Web.Controllers
@@ -50,7 +48,7 @@ namespace MedicalCenter.Web.Controllers
                     (m.Patient.Name + " " + m.Patient.Surname).ToLower().Contains(pn));
             }
 
-            // Correct BETWEEN date range filtering
+            // BETWEEN date range filtering
             if (startDate.HasValue && endDate.HasValue)
             {
                 query = query.Where(m =>
@@ -75,7 +73,6 @@ namespace MedicalCenter.Web.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Map to DTO
             var dtos = items.Select(m => new GetMedicalExaminationViewModel
             {
                 ID = m.ID,

@@ -2,35 +2,96 @@
 @model IEnumerable<GetSpecialtyViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Specialties";
+    int pageNumber = ViewBag.PageNumber;
+    int pageSize = ViewBag.PageSize;
+    int totalItems = ViewBag.TotalItems;
+    int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 }
 
-<h1>Index</h1>
+<h1>Specialties</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
 </p>
-<table class="table">
+
+<!-- FILTER FORM -->
+<form method="get" class="mb-4">
+    <div class="row">
+
+        <div class="col-md-6">
+            <label class="form-label">Description</label>
+            <input type="text" name="description" value="@ViewBag.Description" class="form-control" placeholder="Search description..." />
+        </div>
+
+        <div class="col-md-6 d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a href="@Url.Action("Index", "Specialties")" class="btn btn-secondary">Clear Filters</a>
+        </div>
+
+    </div>
+</form>
+
+<!-- TABLE -->
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.First().Description)</th>
             <th></th>
         </tr>
     </thead>
+
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Description</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- PAGINATION -->
+@if (totalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+
+            @if (pageNumber > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?pageNumber=@(pageNumber - 1)&description=@ViewBag.Description">
+                        Previous
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == pageNumber ? "active" : "")">
+                    <a class="page-link"
+                       href="?pageNumber=@i&description=@ViewBag.Description">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (pageNumber < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?pageNumber=@(pageNumber + 1)&description=@ViewBag.Description">
+                        Next
+                    </a>
+                </li>
+            }
+
+        </ul>
+    </nav>
+}

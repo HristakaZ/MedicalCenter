@@ -20,26 +20,69 @@ namespace MedicalCenter.Web.Controllers
             isAdministrator = httpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator";
         }
 
-        // GET: Users
         [AuthenticateAuthorize("Administrator")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string email,
+                                               string name,
+                                               string surname,
+                                               int pageNumber = 1,
+                                               int pageSize = 10)
         {
-            var users = await _context.Users.ToListAsync();
-            List<GetUserDto> userDtos = new List<GetUserDto>();
-            foreach (var user in users)
+            var query = _context.Users
+                .Include(u => u.Role)
+                .AsQueryable();
+
+            // Filter by Email
+            if (!string.IsNullOrWhiteSpace(email))
             {
-                userDtos.Add(new GetUserDto()
-                {
-                    ID = user.ID,
-                    Email = user.Email,
-                    Name = user.Name,
-                    Surname = user.Surname,
-                    Role = user.Role
-                });
+                string e = email.Trim().ToLower();
+                query = query.Where(u => u.Email.ToLower().Contains(e));
             }
 
-            return View(userDtos);
+            // Filter by Name
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                string n = name.Trim().ToLower();
+                query = query.Where(u => u.Name.ToLower().Contains(n));
+            }
+
+            // Filter by Surname
+            if (!string.IsNullOrWhiteSpace(surname))
+            {
+                string s = surname.Trim().ToLower();
+                query = query.Where(u => u.Surname.ToLower().Contains(s));
+            }
+
+            // Pagination
+            int totalItems = await query.CountAsync();
+
+            var users = await query
+                .OrderBy(u => u.Email)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Map to DTO
+            var dtos = users.Select(user => new GetUserDto
+            {
+                ID = user.ID,
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                Role = user.Role
+            }).ToList();
+
+            // Pass filter values back to view
+            ViewBag.Email = email;
+            ViewBag.Name = name;
+            ViewBag.Surname = surname;
+
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+
+            return View(dtos);
         }
+
 
         // GET: Users/Details/5
         [AuthenticateAuthorize]

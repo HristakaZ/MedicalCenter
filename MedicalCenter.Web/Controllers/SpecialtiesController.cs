@@ -16,19 +16,45 @@ namespace MedicalCenter.Web.Controllers
             _context = context;
         }
 
-        // GET: Specialties
         [AuthenticateAuthorize("Administrator")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string description,
+                                               int pageNumber = 1,
+                                               int pageSize = 10)
         {
-            List<Specialty> specialties = await _context.Specialties.ToListAsync();
-            List<GetSpecialtyViewModel> getSpecialtyViewModels = new List<GetSpecialtyViewModel>();
-            foreach (var specialty in specialties)
+            var query = _context.Specialties.AsQueryable();
+
+            // Filter by description (partial match)
+            if (!string.IsNullOrWhiteSpace(description))
             {
-                getSpecialtyViewModels.Add(new GetSpecialtyViewModel() { ID = specialty.ID, Description = specialty.Description });
+                string d = description.Trim().ToLower();
+                query = query.Where(s => s.Description.ToLower().Contains(d));
             }
 
-            return View(getSpecialtyViewModels);
+            // Pagination
+            int totalItems = await query.CountAsync();
+
+            var specialties = await query
+                .OrderBy(s => s.Description)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Map to DTO
+            var dtos = specialties.Select(s => new GetSpecialtyViewModel
+            {
+                ID = s.ID,
+                Description = s.Description
+            }).ToList();
+
+            // Pass filter values back to view
+            ViewBag.Description = description;
+            ViewBag.PageNumber = pageNumber;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+
+            return View(dtos);
         }
+
 
         // GET: Specialties/Details/5
         [AuthenticateAuthorize("Administrator")]
