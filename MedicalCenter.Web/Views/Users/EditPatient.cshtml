@@ -66,6 +66,7 @@
                 </div>
             }
             <input type="hidden" asp-for="ID" />
+            @Html.ValidationMessage("CannotChangeRoleOfPatient", new { @class = "text-danger" })
             <div class="form-group">
                 <input type="submit" value="Запис" class="btn btn-primary" />
             </div>

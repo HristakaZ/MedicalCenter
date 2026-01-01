@@ -44,7 +44,11 @@ namespace MedicalCenter.Web.Migrations
                     { 2, "Doctor456@gmail.com", "x0bPjSO2rxdVaDzOG9C2fSygAYtFlPekH/UKNgJ1WsMVfD+dzTwYev2/sKA7oNQZ9sh4m0D6m8sS+cF/Qdorww==", "Георги", "Георгиев", 2 }, // raw password - Test456!
                     { 3, "Administrator789@gmail.com", "63QCHXTudjyoCjWA6wXjgkcowt2MCwNDnZD2AFf3+dY8N6qXVulIxW4p7Ucyrwh3otzPRSJLJMhZtt2VWYda2w==", "Димитър", "Димитров", 3 }, // raw password - Test789?
                     { 4, "DoctorBG@gmail.com", "ws0tN4IGRQWBBZSU87WEt1RiQCKmkxLOet6pimScLK5YU07QfGLouqMc8mhlIZe4KRD3TUAQnvlFjRXxXWTCbA==", "Стефан", "Петров", 2 }, // raw password - MedDoc123!
-                    { 5, "PatientBG@gmail.com", "xNrdNp5NsCzus3j/shDrfVEui3/PXjlW/bVwi2OqOvPW1YVIKw0iD+MQVc5De+pq+f0f3MD2cWkN2lEqZrjI/A==", "Мария", "Николова", 1 } // raw password - MedPat456?
+                    { 5, "PatientBG@gmail.com", "xNrdNp5NsCzus3j/shDrfVEui3/PXjlW/bVwi2OqOvPW1YVIKw0iD+MQVc5De+pq+f0f3MD2cWkN2lEqZrjI/A==", "Мария", "Николова", 1 }, // raw password - MedPat456?
+                    { 6, "AdminIvan@gmail.com", "p3ln9clcsffFCYXmkm9XfR2mmyH6XSptR777LC3XinRHPdVMKi0/1ttIZcr+rUC69TrpB3RVuC/MPAbLhnV+xw==", "Ивайло", "Костов", 3 }, // raw password - Admin123!
+                    { 7, "AdminPetar@gmail.com", "F+1NS4CnMKWqh/Ytwpbz+baQ7Zqj8SEZs+LJn/sZ33OaHovTKGwSDJlweC97FnaT96Noh2A/eZAmVZa3TinYFA==", "Петър", "Симеонов", 3 }, // raw password - Admin456?
+                    { 8, "DoctorNew@gmail.com", "6qTCotEgwhIbnnofPaLuUmm0EQ62ibGuMrhOzPUqaSCviEwXEOCmCRhyapQrmswkp5T8LMO92soeMkLvzrgUvQ==", "Александър", "Тодоров", 2 }, // raw password - Doc789!
+                    { 9, "PatientNew@gmail.com", "spb9btmd9VCXtDCwZKzomAhM21kJ3rm3on4b3iIcAnHdWN1y+Jopy/m+mOduu3LPClphnK30AwxdOqFJpZTHKg==", "Елена", "Маринова", 1 } // raw password - Pat789?
                 }
             );
 
@@ -55,7 +59,8 @@ namespace MedicalCenter.Web.Migrations
                 values: new object[,]
                 {
                     { 2, 101, 1 },
-                    { 4, 202, 2 }
+                    { 4, 202, 2 },
+                    { 8, 303, 3 }
                 }
             );
 
@@ -66,7 +71,8 @@ namespace MedicalCenter.Web.Migrations
                 values: new object[,]
                 {
                     { 1, 0725191800L, "+359891234567", 2 },
-                    { 5, 0725191801L, "+359888765432", 4 }
+                    { 5, 0725191801L, "+359888765432", 4 },
+                    { 9, 0725191802L, "+359888111222", 8 },
                 }
             );
 

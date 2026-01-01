@@ -46,7 +46,7 @@
     {
         case RoleConstants.AdminRoleId:
             <text><a asp-action="Edit" asp-route-id="@Model?.ID">Редактиране на потребител</a></text>
-            @if (!(Model?.Role.ID == loggedInUserID && isAdministrator))
+            @if ((Model?.ID != loggedInUserID && isAdministrator))
             {
                 <text>| <a asp-action="Delete" asp-route-id="@Model?.ID">Изтриване на потребител</a></text>
             }

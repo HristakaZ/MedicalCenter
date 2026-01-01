@@ -120,46 +120,95 @@ namespace MedicalCenter.Web.Models
                     Name = "Мария",
                     Surname = "Николова",
                     RoleID = 1
+                },
+                new User
+                {
+                    ID = 6,
+                    Email = "AdminIvan@gmail.com",
+                    Password = "p3ln9clcsffFCYXmkm9XfR2mmyH6XSptR777LC3XinRHPdVMKi0/1ttIZcr+rUC69TrpB3RVuC/MPAbLhnV+xw==", // raw Admin123!
+                    Name = "Ивайло",
+                    Surname = "Костов",
+                    RoleID = 3
+                },
+                new User
+                {
+                    ID = 7,
+                    Email = "AdminPetar@gmail.com",
+                    Password = "F+1NS4CnMKWqh/Ytwpbz+baQ7Zqj8SEZs+LJn/sZ33OaHovTKGwSDJlweC97FnaT96Noh2A/eZAmVZa3TinYFA==", // raw Admin456?
+                    Name = "Петър",
+                    Surname = "Симеонов",
+                    RoleID = 3
+                },
+                new User
+                {
+                    ID = 8,
+                    Email = "DoctorNew@gmail.com",
+                    Password = "6qTCotEgwhIbnnofPaLuUmm0EQ62ibGuMrhOzPUqaSCviEwXEOCmCRhyapQrmswkp5T8LMO92soeMkLvzrgUvQ==", // raw Doc789!
+                    Name = "Александър",
+                    Surname = "Тодоров",
+                    RoleID = 2
+                },
+                new User
+                {
+                    ID = 9,
+                    Email = "PatientNew@gmail.com",
+                    Password = "spb9btmd9VCXtDCwZKzomAhM21kJ3rm3on4b3iIcAnHdWN1y+Jopy/m+mOduu3LPClphnK30AwxdOqFJpZTHKg==", // raw Pat789?
+                    Name = "Елена",
+                    Surname = "Маринова",
+                    RoleID = 1
                 }
             );
             }
 
             if (!modelBuilder.Model.GetEntityTypes().Any(e => e.ClrType == typeof(Doctor)))
             {
-                    modelBuilder.Entity<Doctor>().HasData(
-                    new Doctor
-                    {
-                        ID = 2,
-                        Room = 101,
-                        SpecialtyID = 1
-                    },
-                    new Doctor
-                    {
-                        ID = 4,
-                        Room = 202,
-                        SpecialtyID = 2
-                    }
-                );
+                modelBuilder.Entity<Doctor>().HasData(
+                new Doctor
+                {
+                    ID = 2,
+                    Room = 101,
+                    SpecialtyID = 1
+                },
+                new Doctor
+                {
+                    ID = 4,
+                    Room = 202,
+                    SpecialtyID = 2
+                },
+                new Doctor
+                {
+                    ID = 8,
+                    Room = 303,
+                    SpecialtyID = 3
+                }
+            );
             }
 
             if (!modelBuilder.Model.GetEntityTypes().Any(e => e.ClrType == typeof(Doctor)))
             {
-                    modelBuilder.Entity<Patient>().HasData(
-                    new Patient
-                    {
-                        ID = 1,
-                        SSN = 0725191800,
-                        PhoneNumber = "+359891234567",
-                        DoctorID = 2
-                    },
-                    new Patient
-                    {
-                        ID = 5,
-                        SSN = 0725191801,
-                        PhoneNumber = "+359888765432",
-                        DoctorID = 4
-                    }
-                );
+                modelBuilder.Entity<Patient>().HasData(
+                new Patient
+                {
+                    ID = 1,
+                    SSN = 0725191800,
+                    PhoneNumber = "+359891234567",
+                    DoctorID = 2
+                },
+                new Patient
+                {
+                    ID = 5,
+                    SSN = 0725191801,
+                    PhoneNumber = "+359888765432",
+                    DoctorID = 4
+                },
+                new Patient
+                {
+                    ID = 9,
+                    SSN = 0725191802,
+                    PhoneNumber = "+359888111222",
+                    DoctorID = 8
+                }
+            );
             }
 
             if (!modelBuilder.Model.GetEntityTypes().Any(e => e.ClrType == typeof(MedicalExamination)))

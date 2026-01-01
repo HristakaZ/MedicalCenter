@@ -342,24 +342,24 @@ namespace MedicalCenter.Web.Controllers
         [AuthenticateAuthorize("Doctor", "Administrator")]
         public async Task<IActionResult> EditDoctor(EditDoctorDto editDoctorDto)
         {
+            editDoctorDto.Roles = await _context.Roles
+                .Select(r => new SelectListItem
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description,
+                    Selected = r.ID.ToString() == editDoctorDto.SelectedRole
+                }).ToListAsync();
+
+            editDoctorDto.Specialties = await _context.Specialties
+                .Select(s => new SelectListItem
+                {
+                    Value = s.ID.ToString(),
+                    Text = s.Description,
+                    Selected = s.ID.ToString() == editDoctorDto.SelectedSpecialty
+                }).ToListAsync();
+
             if (!ModelState.IsValid)
             {
-                editDoctorDto.Roles = await _context.Roles
-                    .Select(r => new SelectListItem
-                    {
-                        Value = r.ID.ToString(),
-                        Text = r.Description,
-                        Selected = r.ID.ToString() == editDoctorDto.SelectedRole
-                    }).ToListAsync();
-
-                editDoctorDto.Specialties = await _context.Specialties
-                    .Select(s => new SelectListItem
-                    {
-                        Value = s.ID.ToString(),
-                        Text = s.Description,
-                        Selected = s.ID.ToString() == editDoctorDto.SelectedSpecialty
-                    }).ToListAsync();
-
                 return View(editDoctorDto);
             }
 
@@ -381,7 +381,6 @@ namespace MedicalCenter.Web.Controllers
             {
                 return RedirectToAction("Logout");
             }
-
 
             user.Name = editDoctorDto.Name;
             user.Surname = editDoctorDto.Surname;
@@ -407,7 +406,7 @@ namespace MedicalCenter.Web.Controllers
                     user.RoleID = roleId;
                     user.Role = await _context.Roles.FindAsync(user.RoleID);
 
-                    return await ChangeRoleOfDoctor(roleId, doctor, user);
+                    return await ChangeRoleOfDoctor(roleId, doctor, user, editDoctorDto);
                 }
 
                 return RedirectToAction("Index");
@@ -467,22 +466,22 @@ namespace MedicalCenter.Web.Controllers
         [AuthenticateAuthorize("Patient", "Administrator")]
         public async Task<IActionResult> EditPatient(EditPatientDto editPatientDto)
         {
+            editPatientDto.Doctors = await _context.Doctors
+                .Select(d => new SelectListItem
+                {
+                    Value = d.ID.ToString(),
+                    Text = $"{d.Name} {d.Surname}",
+                    Selected = d.ID.ToString() == editPatientDto.SelectedDoctor
+                }).ToListAsync();
+            editPatientDto.Roles = await _context.Roles
+                .Select(r => new SelectListItem()
+                {
+                    Value = r.ID.ToString(),
+                    Text = r.Description,
+                    Selected = r.ID.ToString() == editPatientDto.SelectedRole
+                }).ToListAsync();
             if (!ModelState.IsValid)
             {
-                editPatientDto.Doctors = await _context.Doctors
-                    .Select(d => new SelectListItem
-                    {
-                        Value = d.ID.ToString(),
-                        Text = $"{d.Name} {d.Surname}",
-                        Selected = d.ID.ToString() == editPatientDto.SelectedDoctor
-                    }).ToListAsync();
-                editPatientDto.Roles = await _context.Roles
-                    .Select(r => new SelectListItem()
-                    {
-                        Value = r.ID.ToString(),
-                        Text = r.Description,
-                        Selected = r.ID.ToString() == editPatientDto.SelectedRole
-                    }).ToListAsync();
                 return View(editPatientDto);
             }
             // Load the existing entities
@@ -525,7 +524,7 @@ namespace MedicalCenter.Web.Controllers
                     user.Role = await _context.Roles.FindAsync(roleId);
                     user.RoleID = roleId;
 
-                    return await ChangeRoleOfPatient(roleId, patient, user);
+                    return await ChangeRoleOfPatient(roleId, patient, user, editPatientDto);
                 }
 
                 return RedirectToAction("Index");
@@ -707,14 +706,25 @@ namespace MedicalCenter.Web.Controllers
             return Convert.ToBase64String(hashBytes);
         }
 
-        private async Task<IActionResult> ChangeRoleOfPatient(int roleId, Patient patient, User user)
+        private async Task<IActionResult> ChangeRoleOfPatient(int roleId, Patient patient, User user, EditPatientDto editPatientDto)
         {
+            bool isPatientInMedicalExaminations = _context.MedicalExaminations.Any(me => me.PatientID == patient.ID);
+            if (isPatientInMedicalExaminations)
+            {
+                ModelState.AddModelError("CannotChangeRoleOfPatient", "Не може да бъде сменена ролята на пациента, тъй като вече участва в медицински прегледи.");
+                return View(editPatientDto);
+            }
+
             switch (roleId)
             {
                 case RoleConstants.PatientRoleId:
                     // No action needed, user remains a patient
                     break;
                 case RoleConstants.DoctorRoleId:
+                    // Remove relationship of patient with doctor
+                    patient.DoctorID = 0;
+                    patient.Doctor = null;
+                    _context.Patients.Update(patient);
                     // If changing to Doctor, remove from Patients table
                     _context.Patients.Remove(patient);
                     // Just adding the record in the doctors table, will redirect to EditDoctor to fill in the rest of the details
@@ -732,6 +742,10 @@ namespace MedicalCenter.Web.Controllers
                     await _context.SaveChangesAsync();
                     return RedirectToAction("EditDoctor", new { id = user.ID });
                 case RoleConstants.AdminRoleId:
+                    // Remove relationship of patient with doctor
+                    patient.DoctorID = 0;
+                    patient.Doctor = null;
+                    _context.Patients.Update(patient);
                     // If changing to Administrator, remove from Patients table
                     _context.Patients.Remove(patient);
                     _context.Users.Add(new User()
@@ -750,8 +764,15 @@ namespace MedicalCenter.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        private async Task<IActionResult> ChangeRoleOfDoctor(int roleId, Doctor doctor, User user)
+        private async Task<IActionResult> ChangeRoleOfDoctor(int roleId, Doctor doctor, User user, EditDoctorDto editDoctorDto)
         {
+            bool isDoctorInMedicalExaminations = _context.MedicalExaminations.Any(me => me.DoctorID == doctor.ID);
+            if (isDoctorInMedicalExaminations)
+            {
+                ModelState.AddModelError("CannotChangeRoleOfDoctor", "Не може да бъде сменена ролята на доктора, тъй като вече участва в медицински прегледи.");
+                return View(editDoctorDto);
+            }
+
             switch (roleId)
             {
                 case RoleConstants.DoctorRoleId:
@@ -759,6 +780,18 @@ namespace MedicalCenter.Web.Controllers
                     await _context.SaveChangesAsync();
                     break;
                 case RoleConstants.PatientRoleId:
+                    // Remove relationship of doctor with patients(assign another doctor to the patients of the current doctor)
+                    int reserveDoctorId = _context.Doctors
+                                                    .Where(d => d.ID != doctor.ID)
+                                                    .Select(d => d.ID)
+                                                    .First();
+                    foreach (var patientOfDoctor in doctor.Patients)
+                    {
+                        patientOfDoctor.Doctor = null;
+                        patientOfDoctor.DoctorID = reserveDoctorId;
+                    }
+                    _context.Patients.UpdateRange(doctor.Patients);
+                    _context.Doctors.Update(doctor);
                     // If changing to Doctor, remove from Doctor table
                     _context.Doctors.Remove(doctor);
                     // Just adding the record in the patients table, will redirect to EditPatient to fill in the rest of the details
@@ -777,6 +810,18 @@ namespace MedicalCenter.Web.Controllers
                     await _context.SaveChangesAsync();
                     return RedirectToAction("EditPatient", new { id = user.ID });
                 case RoleConstants.AdminRoleId:
+                    // Remove relationship of doctor with patients(assign another doctor to the patients of the current doctor)
+                    int fallbackDoctorId = _context.Doctors
+                                                    .Where(d => d.ID != doctor.ID)
+                                                    .Select(d => d.ID)
+                                                    .First();
+                    foreach (var patientOfDoctor in doctor.Patients)
+                    {
+                        patientOfDoctor.Doctor = null;
+                        patientOfDoctor.DoctorID = fallbackDoctorId;
+                    }
+                    _context.Patients.UpdateRange(doctor.Patients);
+                    _context.Doctors.Update(doctor);
                     // If changing to Administrator, remove from Doctor table
                     _context.Doctors.Remove(doctor);
                     _context.Users.Add(new User()

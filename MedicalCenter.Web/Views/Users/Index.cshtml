@@ -75,7 +75,7 @@
                     }
                     |
                     <a asp-action="Details" asp-route-id="@item.ID">Детайли</a>
-                    @if (!(item.ID == loggedInUserID && isAdministrator))
+                    @if ((item.ID != loggedInUserID && isAdministrator))
                     {
                         <text>| <a asp-action="Delete" asp-route-id="@item.ID">Изтриване</a></text>
                     }
