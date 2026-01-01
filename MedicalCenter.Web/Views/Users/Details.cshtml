@@ -1,9 +1,12 @@
 ﻿@using MedicalCenter.Web.Constants
 @using MedicalCenter.Web.Dtos.User
 @model GetUserDto
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Детайли за потребител";
+    int loggedInUserID = HttpContextAccessor.HttpContext!.Session.GetInt32("UserID")!.Value;
+    bool isAdministrator = HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator";
 }
 
 <h1>Детайли</h1>
@@ -42,16 +45,23 @@
     @switch (Model.Role.ID)
     {
         case RoleConstants.AdminRoleId:
-            <text><a asp-action="Edit" asp-route-id="@Model?.ID">Редактиране на потребител</a>
-                | <a asp-action="Delete" asp-route-id="@Model?.ID">Изтриване на потребител</a></text>
+            <text><a asp-action="Edit" asp-route-id="@Model?.ID">Редактиране на потребител</a></text>
+            @if (!(Model?.Role.ID == loggedInUserID && isAdministrator))
+            {
+                <text>| <a asp-action="Delete" asp-route-id="@Model?.ID">Изтриване на потребител</a></text>
+            }
             break;
         case RoleConstants.DoctorRoleId:
-            <text><a asp-action="EditDoctor" asp-route-id="@Model?.ID">Редактиране на доктор</a>
-                | <a asp-action="Delete" asp-route-id="@Model?.ID">Изтриване на доктор</a></text>
+            <text>
+                <a asp-action="EditDoctor" asp-route-id="@Model?.ID">Редактиране на доктор</a>
+                | <a asp-action="Delete" asp-route-id="@Model?.ID">Изтриване на доктор</a>
+            </text>
             break;
         case RoleConstants.PatientRoleId:
-            <text><a asp-action="EditPatient" asp-route-id="@Model?.ID">Редактиране на пациент</a>
-                | <a asp-action="Delete" asp-route-id="@Model?.ID">Изтриване на пациент</a></text>
+            <text>
+                <a asp-action="EditPatient" asp-route-id="@Model?.ID">Редактиране на пациент</a>
+                | <a asp-action="Delete" asp-route-id="@Model?.ID">Изтриване на пациент</a>
+            </text>
             break;
     }
     | <a asp-action="Index">Обратно към всички потребители</a>

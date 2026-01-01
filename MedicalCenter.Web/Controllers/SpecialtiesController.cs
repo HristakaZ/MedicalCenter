@@ -192,6 +192,14 @@ namespace MedicalCenter.Web.Controllers
             var specialty = await _context.Specialties.FindAsync(id);
             if (specialty != null)
             {
+                bool isSpecialtyUsed = await _context.Doctors.AnyAsync(d => d.SpecialtyID == id);
+                if (isSpecialtyUsed)
+                {
+                    ModelState.AddModelError("CannotDeleteSpecialty", "Докторската специалност се използва и не може да бъде изтрита.");
+                    GetSpecialtyViewModel getSpecialtyViewModel = new GetSpecialtyViewModel() { ID = specialty.ID, Description = specialty.Description };
+                    return View(getSpecialtyViewModel);
+                }
+
                 _context.Specialties.Remove(specialty);
             }
 

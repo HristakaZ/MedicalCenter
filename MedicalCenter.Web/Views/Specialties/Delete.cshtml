@@ -19,10 +19,11 @@
             @Html.DisplayFor(model => model.Description)
         </dd>
     </dl>
+    @Html.ValidationMessage("CannotDeleteSpecialty", new { @class = "text-danger" })
     <br>
     <form asp-action="Delete">
         <input type="hidden" asp-for="ID" />
         <input type="submit" value="Изтриване" class="btn btn-danger" /> |
-        <a asp-action="Index">ОБратно към всички докторски специалности</a>
+        <a asp-action="Index">Обратно към всички докторски специалности</a>
     </form>
 </div>
