@@ -17,7 +17,7 @@ namespace MedicalCenter.Web.Dtos.User
 
         [Required(ErrorMessage = "'Потвърди нова парола' е задължително.")]
         [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{8,15}$", ErrorMessage = "Паролата трябва да съдържа 1 число, 1 малка буква, 1 главна буква, един специален символ и да е поне 8 символа.")]
-        [Compare("NewPassword", ErrorMessage = "'Нова парола' и 'Потвърди нова парола' не съвпадат.")]
+        [Compare(nameof(NewPassword), ErrorMessage = "'Нова парола' и 'Потвърди нова парола' не съвпадат.")]
         [Display(Name = "Потвърди нова парола")]
         public string ConfirmNewPassword { get; set; }
     }

@@ -6,61 +6,159 @@
     ViewData["Title"] = "Изтриване на медицински преглед";
 }
 
-<h1>Изтриване на запис</h1>
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0 text-danger">Изтриване на медицински преглед</h1>
 
-<h3>Сигурни ли сте, че искате да изтриете този медицински преглед?</h3>
-<div>
-    <h4>Медицински преглед</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PatientName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PatientName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DoctorName)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DoctorName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Diagnosis)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Diagnosis)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Recommendation)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Recommendation)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="ID" />
-        <input type="submit" value="Изтриване" class="btn btn-danger" /> |
-        @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
-        {
-            <a asp-action="MyExaminations">Обратно към моите медицински прегледи</a>
-        }
-        else
-        {
-            <a asp-action="Index">Обратно към всички медицински прегледи</a>
-        }
-    </form>
+    @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
+    {
+        <a asp-action="MyExaminations" class="btn btn-outline-secondary shadow-sm px-4">
+            <i class="bi bi-arrow-left"></i> Обратно към моите прегледи
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm px-4">
+            <i class="bi bi-arrow-left"></i> Обратно към всички прегледи
+        </a>
+    }
 </div>
+
+<!-- DELETE PREVIEW CARD -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-light fw-semibold text-danger">
+        <i class="bi bi-exclamation-triangle"></i> Потвърждение за изтриване
+    </div>
+
+    <div class="card-body">
+
+        <p class="text-danger fw-semibold mb-3">
+            Сигурни ли сте, че искате да изтриете този медицински преглед?
+        </p>
+
+        <dl class="row mb-0">
+            <dt class="col-sm-3 fw-bold text-secondary">@Html.DisplayNameFor(m => m.StartTime)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.StartTime)</dd>
+
+            <dt class="col-sm-3 fw-bold text-secondary">@Html.DisplayNameFor(m => m.EndTime)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.EndTime)</dd>
+
+            <dt class="col-sm-3 fw-bold text-secondary">@Html.DisplayNameFor(m => m.PatientName)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.PatientName)</dd>
+
+            <dt class="col-sm-3 fw-bold text-secondary">@Html.DisplayNameFor(m => m.DoctorName)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.DoctorName)</dd>
+
+            <dt class="col-sm-3 fw-bold text-secondary">@Html.DisplayNameFor(m => m.Diagnosis)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Diagnosis)</dd>
+
+            <dt class="col-sm-3 fw-bold text-secondary">@Html.DisplayNameFor(m => m.Recommendation)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(m => m.Recommendation)</dd>
+        </dl>
+
+        <form asp-action="Delete" class="mt-4">
+            <input type="hidden" asp-for="ID" />
+
+            <button type="button" class="btn btn-danger px-4 py-2 shadow-sm"
+                    onclick="showDeleteModal()">
+                <i class="bi bi-trash"></i> Изтриване
+            </button>
+
+            @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
+            {
+                <a asp-action="MyExaminations" class="btn btn-outline-secondary px-4 ms-2 shadow-sm">
+                    Отказ
+                </a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary px-4 ms-2 shadow-sm">
+                    Отказ
+                </a>
+            }
+        </form>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Потвърждение за изтриване
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Сигурни ли сте, че искате да изтриете този медицински преглед?
+                <br />
+                <span class="text-muted small">Това действие е необратимо.</span>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                <button id="confirmDeleteBtn" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Изтриване
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ERROR TOAST (always rendered so client-side validation can trigger it) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast text-bg-danger border-0 position-relative"
+         role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+
+        <div class="d-flex">
+            <div class="toast-body">Моля, поправете грешките във формата.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+
+        <div class="toast-progress"></div>
+    </div>
+</div>
+
+<!-- SERVER-SIDE ERROR TOAST -->
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Count > 0)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            new bootstrap.Toast(document.getElementById("errorToast")).show();
+        });
+    </script>
+}
+
+@section Scripts {
+
+    <!-- DELETE MODAL -->
+    <script>
+        function showDeleteModal() {
+            const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+            modal.show();
+
+            document.getElementById("confirmDeleteBtn").onclick = function () {
+                document.querySelector("form").submit();
+            };
+        }
+    </script>
+
+    <!-- CLIENT-SIDE VALIDATION ERROR TOAST -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = $("form");
+
+            form.on("invalid-form.validate", function () {
+                const toastEl = document.getElementById("errorToast");
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
+        });
+    </script>
+}

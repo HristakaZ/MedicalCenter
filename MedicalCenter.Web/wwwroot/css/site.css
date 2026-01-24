@@ -29,3 +29,109 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* Slide-in animation */
+.toast.show {
+    animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Cooldown bar */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.9);
+    width: 100%;
+    animation: toastCooldown 5s linear forwards;
+}
+
+@keyframes toastCooldown {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+/* Prevent restored pages from showing old toasts */
+.toast {
+    opacity: 0;
+}
+
+.toast.show {
+    opacity: 1;
+}
+
+.table {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    background: #f8f9fa;
+}
+
+.card {
+    border-radius: 0.5rem;
+}
+
+.btn-outline-warning:hover,
+.btn-outline-info:hover,
+.btn-outline-danger:hover {
+    transform: translateY(-1px);
+    transition: 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5 !important;
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.table {
+    animation: fadeInTable 0.3s ease-in;
+}
+
+.card {
+    border-radius: 0.5rem;
+}

@@ -97,6 +97,7 @@ namespace MedicalCenter.Web.Controllers
                 Specialty specialty = new Specialty() { Description = addSpecialtyDto.Description };
                 _context.Add(specialty);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Успешно създадохте специалността!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -156,6 +157,7 @@ namespace MedicalCenter.Web.Controllers
                         throw;
                     }
                 }
+                TempData["Success"] = "Успешно редактирахте специалността!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -204,6 +206,7 @@ namespace MedicalCenter.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Успешно изтрихте специалността!";
             return RedirectToAction(nameof(Index));
         }
 

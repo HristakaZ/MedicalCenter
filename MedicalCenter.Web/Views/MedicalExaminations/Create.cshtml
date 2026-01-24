@@ -6,61 +6,120 @@
     ViewData["Title"] = "Създаване на медицински преглед";
 }
 
-<h1>Записване на час за медицински преглед</h1>
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1">Записване на час за медицински преглед</h1>
+        <h5 class="text-muted">
+            Доктор @Model.DoctorName — @Model.DoctorSpecialty
+        </h5>
+    </div>
 
-<h4>Доктор @Model.DoctorName - @Model.DoctorSpecialty</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+    @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
+    {
+        <a asp-action="MyExaminations" class="btn btn-outline-secondary shadow-sm px-4">
+            <i class="bi bi-arrow-left"></i> Обратно към моите прегледи
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm px-4">
+            <i class="bi bi-arrow-left"></i> Обратно към всички прегледи
+        </a>
+    }
+</div>
+
+<!-- FORM CARD -->
+<div class="card shadow-sm border-0 col-md-6 p-0">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-calendar-plus"></i> Въведете информация за прегледа
+    </div>
+
+    <div class="card-body">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- START TIME -->
+            <div class="mb-3">
+                <label asp-for="StartTime" class="form-label fw-semibold"></label>
+                <input asp-for="StartTime" class="form-control shadow-sm" />
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
-            <br>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
+
+            <!-- END TIME -->
+            <div class="mb-3">
+                <label asp-for="EndTime" class="form-label fw-semibold"></label>
+                <input asp-for="EndTime" class="form-control shadow-sm" />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
-            <br>
-            <div id="availabilityMessage" style="margin-top: 5px;"></div>
-            <div class="form-group">
-                <input type="submit" value="Запис" class="btn btn-primary" id="submitBtn" />
-            </div>
+
+            <!-- AVAILABILITY MESSAGE -->
+            <div id="availabilityMessage" class="mt-2"></div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" id="submitBtn" class="btn btn-success px-4 py-2 shadow-sm mt-3">
+                <i class="bi bi-check-lg"></i> Запис
+            </button>
         </form>
     </div>
 </div>
 
-<div>
-    @if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") != "Administrator")
-    {
-        <a asp-action="MyExaminations">Обратно към моите медицински прегледи</a>
-    }
-    else
-    {
-        <a asp-action="Index">Обратно към всички медицински прегледи</a>
-    }
+<!-- ERROR TOAST (always rendered so client-side validation can trigger it) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast text-bg-danger border-0 position-relative"
+         role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+
+        <div class="d-flex">
+            <div class="toast-body">Моля, поправете грешките във формата.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+
+        <div class="toast-progress"></div>
+    </div>
 </div>
+
+<!-- SERVER-SIDE ERROR TOAST -->
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Count > 0)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            new bootstrap.Toast(document.getElementById("errorToast")).show();
+        });
+    </script>
+}
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
     <script>
+        // Flatpickr initialization
         flatpickr("#StartTime", {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
             time_24hr: true,
             minuteIncrement: 30
         });
+
         flatpickr("#EndTime", {
             enableTime: true,
             dateFormat: "Y-m-d H:i",
             time_24hr: true,
             minuteIncrement: 30
+        });
+
+        // CLIENT-SIDE VALIDATION ERROR TOAST
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = $("form");
+
+            form.on("invalid-form.validate", function () {
+                const toastEl = document.getElementById("errorToast");
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
         });
     </script>
 }

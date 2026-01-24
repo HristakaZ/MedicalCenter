@@ -5,25 +5,116 @@
     ViewData["Title"] = "Изтриване на докторска специалност";
 }
 
-<h1>Изтриване на докторска специалност</h1>
+<h1 class="mb-3">Изтриване на докторска специалност</h1>
 
-<h3>Сигурни ли сте, че искате да изтриете тази докторска специалност?</h3>
-<div>
+<h3 class="text-danger">Сигурни ли сте, че искате да изтриете тази докторска специалност?</h3>
+
+<div class="mt-4">
     <h4>Докторска специалност</h4>
     <hr />
+
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
+        <dt class="col-sm-2 fw-bold">@Html.DisplayNameFor(m => m.Description)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(m => m.Description)</dd>
     </dl>
-    @Html.ValidationMessage("CannotDeleteSpecialty", new { @class = "text-danger" })
-    <br>
-    <form asp-action="Delete">
+
+    <div class="text-danger fw-semibold mb-3">
+        @Html.ValidationMessage("CannotDeleteSpecialty")
+    </div>
+
+    <form asp-action="Delete" class="mt-3">
         <input type="hidden" asp-for="ID" />
-        <input type="submit" value="Изтриване" class="btn btn-danger" /> |
-        <a asp-action="Index">Обратно към всички докторски специалности</a>
+
+        <button type="button" class="btn btn-danger px-4 py-2 shadow-sm"
+                onclick="showDeleteModal()">
+            Изтриване
+        </button>
+
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2 px-3">
+            Обратно към всички докторски специалности
+        </a>
     </form>
 </div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Потвърждение за изтриване
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Сигурни ли сте, че искате да изтриете тази докторска специалност?
+                <br />
+                <span class="text-muted small">Това действие е необратимо.</span>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отказ</button>
+                <button id="confirmDeleteBtn" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Изтриване
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ERROR TOAST (always rendered so client-side validation can trigger it) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast text-bg-danger border-0 position-relative"
+         role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+
+        <div class="d-flex">
+            <div class="toast-body">Моля, поправете грешките във формата.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+
+        <div class="toast-progress"></div>
+    </div>
+</div>
+
+<!-- SERVER-SIDE ERROR TOAST -->
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Count > 0)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            new bootstrap.Toast(document.getElementById("errorToast")).show();
+        });
+    </script>
+}
+
+@section Scripts {
+
+    <!-- DELETE MODAL -->
+    <script>
+        function showDeleteModal() {
+            const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+            modal.show();
+
+            document.getElementById("confirmDeleteBtn").onclick = function () {
+                document.querySelector("form").submit();
+            };
+        }
+    </script>
+
+    <!-- CLIENT-SIDE VALIDATION ERROR TOAST -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = $("form");
+
+            form.on("invalid-form.validate", function () {
+                const toastEl = document.getElementById("errorToast");
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
+        });
+    </script>
+}

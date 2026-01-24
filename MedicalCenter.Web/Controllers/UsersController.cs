@@ -161,7 +161,7 @@ namespace MedicalCenter.Web.Controllers
                 };
                 _context.Patients.Add(patient);
                 await _context.SaveChangesAsync();
-
+                TempData["Success"] = "Успешно се регистрирахте!";
                 return RedirectToAction(nameof(Login));
             }
 
@@ -195,6 +195,7 @@ namespace MedicalCenter.Web.Controllers
                     HttpContext.Session.SetInt32("UserID", user.ID);
                     HttpContext.Session.SetString("UserRole", user.Role.Description);
                     HttpContext.Session.SetString("UserEmail", user.Email);
+                    TempData["Success"] = "Успешно влизане!";
                     if (user.RoleID == RoleConstants.AdminRoleId)
                     {
                         return RedirectToAction(nameof(Index));
@@ -286,6 +287,7 @@ namespace MedicalCenter.Web.Controllers
                         throw;
                     }
                 }
+                TempData["Success"] = "Успешно редактирахте потребителя!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -601,6 +603,7 @@ namespace MedicalCenter.Web.Controllers
                         throw;
                     }
                 }
+                TempData["Success"] = "Успешно сменихте паролата!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -680,6 +683,7 @@ namespace MedicalCenter.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Успешно изтрихте потребителя!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -740,6 +744,7 @@ namespace MedicalCenter.Web.Controllers
                         SpecialtyID = _context.Specialties.First().ID
                     });
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Успешно сменихте ролята на пациента!";
                     return RedirectToAction("EditDoctor", new { id = user.ID });
                 case RoleConstants.AdminRoleId:
                     // Remove relationship of patient with doctor
@@ -758,6 +763,7 @@ namespace MedicalCenter.Web.Controllers
                         RoleID = (await _context.Roles.FindAsync(RoleConstants.AdminRoleId)).ID,
                     });
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Успешно сменихте ролята на пациента!";
                     return RedirectToAction("Edit", new { id = user.ID });
             }
 
@@ -808,6 +814,7 @@ namespace MedicalCenter.Web.Controllers
                         DoctorID = _context.Doctors.First().ID,
                     });
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Успешно сменихте ролята на доктора!";
                     return RedirectToAction("EditPatient", new { id = user.ID });
                 case RoleConstants.AdminRoleId:
                     // Remove relationship of doctor with patients(assign another doctor to the patients of the current doctor)
@@ -834,6 +841,7 @@ namespace MedicalCenter.Web.Controllers
                         RoleID = (await _context.Roles.FindAsync(RoleConstants.AdminRoleId)).ID,
                     });
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Успешно сменихте ролята на доктора!";
                     return RedirectToAction("Edit", new { id = user.ID });
             }
 

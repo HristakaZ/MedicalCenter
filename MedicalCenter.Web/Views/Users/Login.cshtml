@@ -5,35 +5,86 @@
     ViewData["Title"] = "Логин";
 }
 
-<h1>Логин</h1>
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-center align-items-center mb-4">
+    <h1 class="mb-0">Вход в системата</h1>
+</div>
 
-<h4>Потребител</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <br>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <br>
-            <div class="form-group">
-                <input type="submit" value="Влез" class="btn btn-primary" />
-            </div>
-        </form>
+<!-- FORM CARD (CENTERED) -->
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm border-0 col-md-5 p-0">
+        <div class="card-header bg-light fw-semibold">
+            <i class="bi bi-box-arrow-in-right"></i> Въведете вашите данни
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Login">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- EMAIL -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control shadow-sm" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label fw-semibold"></label>
+                    <input asp-for="Password" type="password" class="form-control shadow-sm" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <!-- SUBMIT BUTTON -->
+                <button type="submit" class="btn btn-primary px-4 py-2 shadow-sm">
+                    <i class="bi bi-door-open"></i> Влез
+                </button>
+            </form>
+        </div>
     </div>
 </div>
+
+<!-- ERROR TOAST (always rendered so client-side validation can trigger it) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast text-bg-danger border-0 position-relative"
+         role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+
+        <div class="d-flex">
+            <div class="toast-body">Моля, поправете грешките във формата.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+
+        <div class="toast-progress"></div>
+    </div>
+</div>
+
+<!-- SERVER-SIDE ERROR TOAST -->
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Count > 0)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            new bootstrap.Toast(document.getElementById("errorToast")).show();
+        });
+    </script>
+}
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // CLIENT-SIDE VALIDATION ERROR TOAST
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = $("form");
+
+            form.on("invalid-form.validate", function () {
+                const toastEl = document.getElementById("errorToast");
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
+        });
+    </script>
 }

@@ -5,21 +5,41 @@
     ViewData["Title"] = "Детайли за докторска специалност";
 }
 
-<h1>Детайли</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Детайли за специалност</h1>
 
-<div>
-    <h4>Докторска специалност</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
+    <a asp-action="Index" class="btn btn-outline-secondary shadow-sm px-4">
+        <i class="bi bi-arrow-left"></i> Обратно към всички докторски специалности
+    </a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ID">Редактиране</a> |
-    <a asp-action="Index">Обратно към всички докторски специалности</a>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-info-circle"></i> Информация за специалността
+    </div>
+
+    <div class="card-body">
+
+        <dl class="row mb-0">
+            <dt class="col-sm-3 fw-bold text-secondary">
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+        </dl>
+
+    </div>
+</div>
+
+<div class="mt-4 d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.ID"
+       class="btn btn-warning shadow-sm px-4">
+        <i class="bi bi-pencil"></i> Редактиране
+    </a>
+
+    <a asp-action="Delete" asp-route-id="@Model.ID"
+       class="btn btn-danger shadow-sm px-4">
+        <i class="bi bi-trash"></i> Изтриване
+    </a>
 </div>

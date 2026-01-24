@@ -276,6 +276,7 @@ namespace MedicalCenter.Web.Controllers
                 };
                 _context.Add(medicalExamination);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Успешно запазихте час за медицински преглед!";
                 return RedirectToAction(nameof(MyExaminations));
             }
 
@@ -393,6 +394,7 @@ namespace MedicalCenter.Web.Controllers
                         throw;
                     }
                 }
+                TempData["Success"] = "Успешно редактирахте медицински преглед!";
                 return RedirectToAction(nameof(MyExaminations));
             }
 
@@ -456,6 +458,7 @@ namespace MedicalCenter.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Успешно изтрихте медицински преглед!";
             return RedirectToAction(nameof(MyExaminations));
         }
 

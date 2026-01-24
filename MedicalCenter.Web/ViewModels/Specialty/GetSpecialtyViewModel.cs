@@ -7,6 +7,7 @@ namespace MedicalCenter.Web.ViewModels.Specialty
         public int ID { get; set; }
 
         [Display(Name = "Описание")]
+        [Required(ErrorMessage = "Описанието е задължително.")]
         public string Description { get; set; }
     }
 }

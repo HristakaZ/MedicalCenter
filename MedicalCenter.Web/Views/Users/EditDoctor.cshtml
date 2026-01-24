@@ -7,66 +7,121 @@
     bool isAdministrator = HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator";
 }
 
-<h1>Редактиране на доктор</h1>
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Редактиране на доктор</h1>
 
-<h4>Доктор</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+    @if (isAdministrator)
+    {
+        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm px-4">
+            <i class="bi bi-arrow-left"></i> Обратно към всички потребители
+        </a>
+    }
+</div>
+
+<!-- FORM CARD (LEFT-ALIGNED) -->
+<div class="card shadow-sm border-0 col-md-6 p-0">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-person-badge"></i> Данни на доктора
+    </div>
+
+    <div class="card-body">
         <form asp-action="EditDoctor">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Room" class="control-label"></label>
-                <input asp-for="Room" class="form-control" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- ROOM -->
+            <div class="mb-3">
+                <label asp-for="Room" class="form-label fw-semibold"></label>
+                <input asp-for="Room" class="form-control shadow-sm" />
                 <span asp-validation-for="Room" class="text-danger"></span>
             </div>
-            <br>
-            <div class="form-group">
-                <label class="control-label">Специалност</label>
-                <select asp-for="SelectedSpecialty" class="form-control" asp-items="Model.Specialties"></select>
+
+            <!-- SPECIALTY -->
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Специалност</label>
+                <select asp-for="SelectedSpecialty" asp-items="Model.Specialties"
+                        class="form-control shadow-sm"></select>
                 <span asp-validation-for="SelectedSpecialty" class="text-danger"></span>
             </div>
-            <br>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+
+            <!-- NAME -->
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-semibold"></label>
+                <input asp-for="Name" class="form-control shadow-sm" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <br>
-            <div class="form-group">
-                <label asp-for="Surname" class="control-label"></label>
-                <input asp-for="Surname" class="form-control" />
+
+            <!-- SURNAME -->
+            <div class="mb-3">
+                <label asp-for="Surname" class="form-label fw-semibold"></label>
+                <input asp-for="Surname" class="form-control shadow-sm" />
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
-            <br>
+
+            <!-- ROLE (Admins only) -->
             @if (isAdministrator)
             {
-                <div class="form-group">
-                    <label class="control-label">Роля</label>
-                    <select asp-for="SelectedRole" class="form-control" asp-items="Model.Roles"></select>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Роля</label>
+                    <select asp-for="SelectedRole" asp-items="Model.Roles"
+                            class="form-control shadow-sm"></select>
                     <span asp-validation-for="SelectedRole" class="text-danger"></span>
                 </div>
             }
-            <br>
+
             <input type="hidden" asp-for="ID" />
-            <br>
+
             @Html.ValidationMessage("CannotChangeRoleOfDoctor", new { @class = "text-danger" })
-            <div class="form-group">
-                <input type="submit" value="Запис" class="btn btn-primary" />
-            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" class="btn btn-success px-4 py-2 shadow-sm mt-2">
+                <i class="bi bi-check-lg"></i> Запис
+            </button>
         </form>
     </div>
 </div>
 
-@if (HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator")
-{
-    <div>
-        <a asp-action="Index">Обратно към всички потребители</a>
+<!-- ERROR TOAST (always rendered so client-side validation can trigger it) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast text-bg-danger border-0 position-relative"
+         role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+
+        <div class="d-flex">
+            <div class="toast-body">Моля, поправете грешките във формата.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"></button>
+        </div>
+
+        <div class="toast-progress"></div>
     </div>
+</div>
+
+<!-- SERVER-SIDE ERROR TOAST -->
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Count > 0)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            new bootstrap.Toast(document.getElementById("errorToast")).show();
+        });
+    </script>
 }
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // CLIENT-SIDE VALIDATION ERROR TOAST
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = $("form");
+
+            form.on("invalid-form.validate", function () {
+                const toastEl = document.getElementById("errorToast");
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
+        });
+    </script>
 }

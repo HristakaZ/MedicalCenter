@@ -13,91 +13,163 @@
     bool isAdministrator = HttpContextAccessor.HttpContext.Session.GetString("UserRole") == "Administrator";
 }
 
-<h1>Всички потребители</h1>
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Всички потребители</h1>
 
-<form method="get" class="mb-4">
-    <div class="row">
-        <div class="col-md-4">
-            <label class="form-label">Имейл</label>
-            <input type="text" name="email" value="@ViewBag.Email" class="form-control" placeholder="Търсене по имейл..." />
-        </div>
+    <span class="badge bg-primary fs-6 shadow-sm">
+        Общо: @totalItems
+    </span>
+</div>
 
-        <div class="col-md-4">
-            <label class="form-label">Име</label>
-            <input type="text" name="name" value="@ViewBag.Name" class="form-control" placeholder="Търсене по име..." />
-        </div>
-
-        <div class="col-md-4">
-            <label class="form-label">Фамилия</label>
-            <input type="text" name="surname" value="@ViewBag.Surname" class="form-control" placeholder="Търсене по фамилия..." />
-        </div>
+<!-- FILTER CARD -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-funnel"></i> Филтри
     </div>
 
-    <div class="row mt-3">
-        <div class="col-md-12 d-flex justify-content-end gap-2">
-            <button type="submit" class="btn btn-primary">Прилагане на филтри</button>
-            <a href="@Url.Action("Index", "Users")" class="btn btn-secondary">Изчистване на филтри</a>
-        </div>
+    <div class="card-body">
+        <form method="get">
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Имейл</label>
+                    <input type="text" name="email" value="@ViewBag.Email"
+                           class="form-control shadow-sm"
+                           placeholder="Търсене по имейл..." />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Име</label>
+                    <input type="text" name="name" value="@ViewBag.Name"
+                           class="form-control shadow-sm"
+                           placeholder="Търсене по име..." />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Фамилия</label>
+                    <input type="text" name="surname" value="@ViewBag.Surname"
+                           class="form-control shadow-sm"
+                           placeholder="Търсене по фамилия..." />
+                </div>
+
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                    <i class="bi bi-search"></i> Прилагане на филтри
+                </button>
+
+                <a href="@Url.Action("Index", "Users")"
+                   class="btn btn-outline-secondary px-4 shadow-sm">
+                    <i class="bi bi-x-circle"></i> Изчистване
+                </a>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.First().Email)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Name)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Surname)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Role)</th>
-            <th></th>
-        </tr>
-    </thead>
+<!-- TABLE CARD -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-light fw-semibold">
+        <i class="bi bi-people"></i> Списък с потребители
+    </div>
 
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Email</td>
-                <td>@item.Name</td>
-                <td>@item.Surname</td>
-                <td><b>@item.Role.Description</b></td>
-                <td>
-                    @switch (item.Role.ID)
+    <div class="card-body p-0">
+        <table class="table table-hover table-striped align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.First().Email)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().Surname)</th>
+                    <th>@Html.DisplayNameFor(model => model.First().Role)</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                            Няма намерени потребители.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in Model)
                     {
-                        case RoleConstants.AdminRoleId:
-                            <a asp-action="Edit" asp-route-id="@item.ID">Редактиране на потребител</a>
-                            break;
-                        case RoleConstants.DoctorRoleId:
-                            <a asp-action="EditDoctor" asp-route-id="@item.ID">Редактиране на доктор</a>
-                            break;
-                        case RoleConstants.PatientRoleId:
-                            <a asp-action="EditPatient" asp-route-id="@item.ID">Редактиране на пациент</a>
-                            break;
-                    }
-                    |
-                    <a asp-action="Details" asp-route-id="@item.ID">Детайли</a>
-                    @if ((item.ID != loggedInUserID && isAdministrator))
-                    {
-                        <text>| <a asp-action="Delete" asp-route-id="@item.ID">Изтриване</a></text>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                        <tr>
+                            <td>@item.Email</td>
+                            <td>@item.Name</td>
+                            <td>@item.Surname</td>
+                            <td><b>@item.Role.Description</b></td>
 
+                            <td class="text-end">
+
+                                <!-- EDIT BUTTON -->
+                                @switch (item.Role.ID)
+                                {
+                                    case RoleConstants.AdminRoleId:
+                                        <a asp-action="Edit" asp-route-id="@item.ID"
+                                           class="btn btn-sm btn-outline-warning shadow-sm me-1">
+                                            <i class="bi bi-pencil"></i> Редактиране
+                                        </a>
+                                        break;
+
+                                    case RoleConstants.DoctorRoleId:
+                                        <a asp-action="EditDoctor" asp-route-id="@item.ID"
+                                           class="btn btn-sm btn-outline-warning shadow-sm me-1">
+                                            <i class="bi bi-pencil"></i> Редактиране
+                                        </a>
+                                        break;
+
+                                    case RoleConstants.PatientRoleId:
+                                        <a asp-action="EditPatient" asp-route-id="@item.ID"
+                                           class="btn btn-sm btn-outline-warning shadow-sm me-1">
+                                            <i class="bi bi-pencil"></i> Редактиране
+                                        </a>
+                                        break;
+                                }
+
+                                <!-- DETAILS BUTTON -->
+                                <a asp-action="Details" asp-route-id="@item.ID"
+                                   class="btn btn-sm btn-outline-info shadow-sm me-1">
+                                    <i class="bi bi-info-circle"></i> Детайли
+                                </a>
+
+                                <!-- DELETE BUTTON (Admins only, cannot delete themselves) -->
+                                @if (item.ID != loggedInUserID && isAdministrator)
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.ID"
+                                       class="btn btn-sm btn-outline-danger shadow-sm">
+                                        <i class="bi bi-trash"></i> Изтриване
+                                    </a>
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- PAGINATION -->
 @if (totalPages > 1)
 {
-    <nav>
-        <ul class="pagination">
-            @if (pageNumber > 1)
-            {
-                <li class="page-item">
-                    <a class="page-link"
-                       href="?pageNumber=@(pageNumber - 1)&email=@ViewBag.Email&name=@ViewBag.Name&surname=@ViewBag.Surname">
-                        Предишна страница
-                    </a>
-                </li>
-            }
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   href="?pageNumber=@(pageNumber - 1)&email=@ViewBag.Email&name=@ViewBag.Name&surname=@ViewBag.Surname">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
 
             @for (int i = 1; i <= totalPages; i++)
             {
@@ -109,15 +181,51 @@
                 </li>
             }
 
-            @if (pageNumber < totalPages)
-            {
-                <li class="page-item">
-                    <a class="page-link"
-                       href="?pageNumber=@(pageNumber + 1)&email=@ViewBag.Email&name=@ViewBag.Name&surname=@ViewBag.Surname">
-                        Следваща страница
-                    </a>
-                </li>
-            }
+            <li class="page-item @(pageNumber == totalPages ? "disabled" : "")">
+                <a class="page-link"
+                   href="?pageNumber=@(pageNumber + 1)&email=@ViewBag.Email&name=@ViewBag.Name&surname=@ViewBag.Surname">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
         </ul>
     </nav>
+}
+
+<!-- SUCCESS TOAST -->
+@if (TempData["Success"] != null)
+{
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast text-bg-success border-0 position-relative"
+             role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+
+            <div class="d-flex">
+                <div class="toast-body">
+                    @TempData["Success"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast"></button>
+            </div>
+
+            <div class="toast-progress"></div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const successMessage = "@TempData["Success"]";
+            if (successMessage && successMessage.length > 0) {
+                const toastEl = document.getElementById("successToast");
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            }
+        });
+    </script>
 }
